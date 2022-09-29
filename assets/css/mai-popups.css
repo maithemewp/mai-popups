@@ -1,0 +1,122 @@
+[id^="mai-popup-"] {
+	display: none;
+}
+
+.mai-popup,
+.mai-popup::before {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.mai-popup {
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.8);
+	opacity: 0.01;
+	transition: opacity 0.4s ease;
+	will-change: opacity;
+}
+
+.mai-popup::before {
+	cursor: pointer;
+	content: "";
+}
+
+.mai-popup--visible {
+	display: flex;
+	opacity: 1;
+}
+
+.mai-popup__placeholder {
+	position: relative;
+	z-index: 1;
+	max-width: var(--mai-popup-max-width, 100%);
+	margin: auto 16px;
+	transform: scale(0.9);
+	transition: transform 0.4s ease;
+	will-change: transform;
+}
+
+.mai-popup__placeholder > iframe:first-child:last-child,
+.mai-popup__placeholder > img:first-child:last-child,
+.mai-popup__placeholder > video:first-child:last-child {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: block;
+	max-width: 95%;
+	max-height: 95%;
+	margin: auto;
+}
+
+.mai-popup__placeholder > iframe:first-child:last-child,
+.mai-popup__placeholder > video:first-child:last-child {
+	pointer-events: auto;
+}
+
+.mai-popup__placeholder > img:first-child:last-child,
+.mai-popup__placeholder > video:first-child:last-child {
+	width: auto;
+	height: auto;
+}
+
+.mai-popup--iframe .mai-popup__placeholder,
+.mai-popup--img .mai-popup__placeholder,
+.mai-popup--video .mai-popup__placeholder {
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.mai-popup--visible .mai-popup__placeholder {
+	transform: scale(1);
+}
+
+.mai-popup__close {
+	pointer-events: none;
+}
+
+.mai-popup__close,
+.mai-popup__close:hover,
+.mai-popup__close:focus {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 8px);
+	width: 2em;
+	height: 2em;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+
+.mai-popup__close::before,
+.mai-popup__close::after {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	margin-top: -1px;
+	background: #fff;
+	content: "";
+}
+
+.mai-popup__close::before {
+	transform: rotate(45deg);
+}
+
+.mai-popup__close::after {
+	transform: rotate(-45deg);
+}
+
+.mai-popup__close:hover::before,
+.mai-popup__close:hover::after {
+	background: #fff;
+}
