@@ -11,7 +11,7 @@
 	 * Wait until page is loaded.
 	 */
 	window.addEventListener( 'load', function( event ) {
-		const timed    = document.querySelectorAll( '.mai-popup-timed' );
+		const timed    = document.querySelectorAll( '.mai-popup-time' );
 		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
 		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 
@@ -100,7 +100,9 @@
 							waiting.splice(0, 1);
 
 							// Launch popup.
-							next.show();
+							setTimeout( function() {
+								next.show();
+							}, 500 );
 						}
 					}
 				}
@@ -110,7 +112,7 @@
 			if ( ! isPopped ) {
 				instance.show(() => {
 					var element = instance.element();
-					var toFocus = element.querySelector( '.mai-popup__placeholder > *:first-child' );
+					var toFocus = element.querySelector( '.mai-popup__content' );
 
 					if ( toFocus ) {
 						toFocus.setAttribute( 'tabindex', 0 );

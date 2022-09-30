@@ -95,7 +95,9 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
-			$html .= $this->get_inner_blocks();
+			$html .= '<div class="mai-popup__content">';
+				$html .= $this->get_inner_blocks();
+			$html .= '</div>';
 			$html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
 		$html .= '</div>';
 
@@ -112,8 +114,10 @@ class Mai_Popup {
 	 * @return void
 	 */
 	function enqueue() {
-		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . '/assets/css/mai-popups.css', [], MAI_POPUPS_VERSION );
-		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . '/assets/js/mai-popups.js', [], MAI_POPUPS_VERSION, true );
+		$suffix  = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/css/mai-popups{$suffix}.css", [], MAI_POPUPS_VERSION );
+		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/js/mai-popups{$suffix}.js", [], MAI_POPUPS_VERSION, true );
 	}
 
 	/**
