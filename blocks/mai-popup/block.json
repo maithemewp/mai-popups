@@ -1,10 +1,10 @@
 {
   "name": "acf/mai-popup",
   "title": "Mai Popup",
-  "description": "A lightweight, flexible, popup and slideup block.",
+  "description": "A lightweight and flexible popup, slideup, notice, and hello bar block.",
   "category": "widgets",
-  "keywords": [ "popup", "separator", "separate" ],
-  "textdomain": "mai-engine",
+  "keywords": [ "popup", "cta", "slide" ],
+  "textdomain": "mai-popups",
   "acf": {
     "mode": "preview",
     "renderCallback": "mai_do_popup_block"

@@ -1,0 +1,16 @@
+{
+  "name": "acf/mai-popup-close",
+  "title": "Mai Popup (Close Button)",
+  "description": "Close button for Mai Popups block.",
+  "category": "widgets",
+  "keywords": [ "popup", "separator", "separate" ],
+  "textdomain": "mai-popups",
+  "parent": "acf/mai-popup",
+  "acf": {
+    "mode": "preview",
+    "renderCallback": "mai_do_popup_close_block"
+  },
+  "supports": {
+    "color": true
+  }
+}

@@ -19,27 +19,11 @@ class Mai_Popup {
 	 *
 	 * @return void
 	 */
-	function __construct( $args ) {
+	function __construct( $args = [] ) {
 		$this->defaults = maipopups_get_defaults();
-		// $this->args     = $this->array_map( 'esc_html', shortcode_atts( $this->defaults, $args, $this->key ) );
-		// $this->args     = $this->array_map( 'trim', $this->args );
 		$this->args     = array_map( 'esc_html', shortcode_atts( $this->defaults, $args, $this->key ) );
 		$this->args     = array_map( 'trim', $this->args );
 	}
-
-	/**
-	 * Maps an array recursively.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param callable $func  The function name map.
-	 * @param array    $array The array being sanitized/filtered.
-	 *
-	 * @return array
-	 */
-	// function array_map( callable $func, array $array ) {
-	// 	return filter_var( $array, FILTER_CALLBACK, [ 'options' => $func ] );
-	// }
 
 	/**
 	 * Display the popup.
@@ -79,20 +63,25 @@ class Mai_Popup {
 			add_action( 'wp_footer', [ $this, 'enqueue' ] );
 		}
 
-		$html = '';
-		$id   = ltrim( $this->args['id'], '#' );
-		$atts = '';
-		$args = [
+		$html  = '';
+		$id    = ltrim( $this->args['id'], '#' );
+		$width = sprintf( '%s%s', $this->args['width'], is_numeric( $this->args['width'] ) ? 'px' : '' );
+		$atts  = '';
+		$args  = [
 			'id'           => $id,
 			'class'        => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
-			'style'        => sprintf( '--mai-popup-max-width:%s%s;', $this->args['width'], is_numeric( $this->args['width'] ) ? 'px' : ''  ),
+			'style'        => sprintf( '--mai-popup-max-width:%s;', $width ),
 			'data-animate' => $this->args['animate'],
-			'data-overlay' => rest_sanitize_boolean( $this->args['overlay'] ),
+			'data-overlay' => rest_sanitize_boolean( $this->args['overlay'] ) ? "true" : "false",
 		];
 
 		// Adds editor class.
 		if ( $this->args['preview'] ) {
 			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px))';
+		}
+
+		if ( '100%' === $width ) {
+			$args['style'] .= '--mai-popup-margin:0;--mai-popup-border-radius:0;--mai-popup-close-right:16px;';
 		}
 
 		// Adds position custom properties.
@@ -121,7 +110,7 @@ class Mai_Popup {
 		}
 
 		// If a cookied popup.
-		if ( in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) ) {
+		if ( ! current_user_can( 'edit_posts' ) && in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) ) {
 			// Bail if already viewed.
 			if ( isset( $_COOKIE[ $id ] ) ) {
 				return $html;
@@ -146,7 +135,7 @@ class Mai_Popup {
 			$html .= '<div class="mai-popup__content">';
 				$html .= $this->get_inner_blocks();
 			$html .= '</div>';
-			$html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
+			// $html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
 		$html .= '</div>';
 
 		$first = false;

@@ -37,6 +37,7 @@
 			const current  = document.activeElement;
 			const style    = popup.getAttribute( 'style' );
 			const animate  = popup.getAttribute( 'data-animate' );
+			const overlay  = popup.getAttribute( 'data-overlay' );
 			const instance = maiPopups.create( popup,
 				{
 					onShow: (instance) => {
@@ -47,6 +48,7 @@
 						var el = instance.element();
 						el.setAttribute( 'style', style );
 						el.setAttribute( 'data-animate', animate );
+						el.setAttribute( 'data-overlay', overlay );
 
 						// Close when hitting escape.
 						document.onkeyup = function( event ) {

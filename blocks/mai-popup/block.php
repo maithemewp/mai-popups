@@ -3,13 +3,6 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
-add_filter( 'the_content', function( $content ) {
-	$element = '<span id="mai-popups-tracker"></span>';
-	$content = $element . $content;
-
-	return $content;
-});
-
 add_action( 'acf/init', 'mai_register_popup_block' );
 /**
  * Register Mai Popup block.
