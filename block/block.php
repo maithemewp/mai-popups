@@ -38,14 +38,18 @@ function mai_register_popup_block() {
  * @return void
  */
 function mai_do_popup_block( $attributes, $content = '', $is_preview = false, $post_id = 0, $wp_block, $context ) {
-	$args            = [];
-	$args['class']   = isset( $attributes['className'] ) ? $attributes['className']: '';
-	$args['id']      = get_field( 'id' );
-	$args['trigger'] = get_field( 'trigger' );
-	$args['text']    = get_field( 'text' );
-	$args['delay']   = get_field( 'delay' );
-	$args['width']   = get_field( 'width' );
-	$args['preview'] = $is_preview;
+	$args             = [];
+	$args['class']    = isset( $attributes['className'] ) ? $attributes['className']: '';
+	$args['position'] = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
+	$args['id']       = get_field( 'id' );
+	$args['trigger']  = get_field( 'trigger' );
+	$args['animate']  = get_field( 'animate' );
+	$args['text']     = get_field( 'text' );
+	$args['delay']    = get_field( 'delay' );
+	$args['width']    = get_field( 'width' );
+	$args['overlay']  = get_field( 'overlay' );
+	$args['repeat']   = get_field( 'repeat' );
+	$args['preview']  = $is_preview;
 
 	$popup = new Mai_Popup( $args );
 	$popup->render();
@@ -68,7 +72,7 @@ function mai_register_popup_field_group() {
 
 add_filter( 'acf/prepare_field/key=field_6333560d1d02e', 'mai_prepare_popup_id_field' );
 /**
- * Sets popup ID, label, and forces readonly.
+ * Sets popup ID and forces readonly.
  *
  * @param array $field The field data.
  *
@@ -79,7 +83,6 @@ function mai_prepare_popup_id_field( $field ) {
 		$field['value'] = uniqid( '#mai-popup-' );
 	}
 
-	$field['label']    = __( 'Launch this popup by linking any text or button link to anchor below. The popup must be on the page for the link to work.', 'mai-popups' );
 	$field['readonly'] = true;
 
 	return $field;

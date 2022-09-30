@@ -20,21 +20,34 @@ class Mai_Popup {
 	 * @return void
 	 */
 	function __construct( $args ) {
-		$this->defaults = mai_get_popup_defaults();
+		$this->defaults = maipopups_get_defaults();
+		// $this->args     = $this->array_map( 'esc_html', shortcode_atts( $this->defaults, $args, $this->key ) );
+		// $this->args     = $this->array_map( 'trim', $this->args );
 		$this->args     = array_map( 'esc_html', shortcode_atts( $this->defaults, $args, $this->key ) );
 		$this->args     = array_map( 'trim', $this->args );
-		$this->hooks();
 	}
 
 	/**
-	 * Runs hooks.
+	 * Maps an array recursively.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param callable $func  The function name map.
+	 * @param array    $array The array being sanitized/filtered.
+	 *
+	 * @return array
+	 */
+	// function array_map( callable $func, array $array ) {
+	// 	return filter_var( $array, FILTER_CALLBACK, [ 'options' => $func ] );
+	// }
+
+	/**
+	 * Display the popup.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @return void
 	 */
-	function hooks() {}
-
 	function render() {
 		echo $this->get();
 	}
@@ -49,6 +62,18 @@ class Mai_Popup {
 	function get() {
 		static $first = true;
 
+		// Check custom condition.
+		if ( $this->args['condition'] ) {
+			if ( is_callable( $this->args['condition'] ) ) {
+				$condition = $this->args['condition']();
+			} else {
+				$condition = $this->args['condition'];
+			}
+
+			if ( ! $condition ) {
+				return;
+			}
+		}
 
 		if ( $first ) {
 			add_action( 'wp_footer', [ $this, 'enqueue' ] );
@@ -58,34 +83,57 @@ class Mai_Popup {
 		$id   = ltrim( $this->args['id'], '#' );
 		$atts = '';
 		$args = [
-			'id'    => $id,
-			'class' => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
-			'style' => sprintf( '--mai-popup-max-width:%s;', $this->args['width'] ),
+			'id'           => $id,
+			'class'        => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
+			'style'        => sprintf( '--mai-popup-max-width:%s%s;', $this->args['width'], is_numeric( $this->args['width'] ) ? 'px' : ''  ),
+			'data-animate' => $this->args['animate'],
+			'data-overlay' => rest_sanitize_boolean( $this->args['overlay'] ),
 		];
 
-		$now    = strtotime( 'now' );
-		$future = strtotime( ' + 1 days' );
-		$expire = $future - $now;
+		// Adds editor class.
+		if ( $this->args['preview'] ) {
+			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px))';
+		}
+
+		// Adds position custom properties.
+		if ( $this->args['position'] ) {
+			$positions  = array_map( 'trim', explode( ' ', $this->args['position'] ) );
+			$vertical   = reset( $positions ) ?: 'center';
+			$vertical   = 'top' === $vertical ? 'start' : $vertical;
+			$vertical   = 'bottom' === $vertical ? 'end' : $vertical;
+			$horizontal = end( $positions ) ?: 'center';
+			$horizontal = 'left' === $horizontal ? 'start' : $horizontal;
+			$horizontal = 'right' === $horizontal ? 'end' : $horizontal;
+
+			$args['style'] .= sprintf( '--mai-popup-justify-content:%s;--mai-popup-align-items:%s;', $vertical, $horizontal );
+		}
 
 		// Sets trigger attributes.
 		switch ( $this->args['trigger'] ) {
 			case 'time':
 				// Set delay in milliseconds.
 				$args['data-delay'] = absint( $this->args['delay'] ) * 1000;
-				// Set expiration.
-				$args['data-expire'] = $expire;
 			break;
 			case 'scroll':
 				// Set scroll distance.
 				$args['data-distance'] = absint( $this->args['distance'] );
-				// Set expiration.
-				$args['data-expire'] = $expire;
 			break;
 		}
 
-		// Bail if already viewd.
-		if ( in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && isset( $_COOKIE[ $id ] ) ) {
-			return $html;
+		// If a cookied popup.
+		if ( in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) ) {
+			// Bail if already viewed.
+			if ( isset( $_COOKIE[ $id ] ) ) {
+				return $html;
+			}
+
+			// Get expiration.
+			$now    = strtotime( 'now' );
+			$future = strtotime( '+ ' . $this->args['repeat'] );
+			$expire = $future - $now;
+
+			// Set expiration.
+			$args['data-expire'] = $expire;
 		}
 
 		// Build args.

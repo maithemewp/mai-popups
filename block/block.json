@@ -10,6 +10,7 @@
     "renderCallback": "mai_do_popup_block"
   },
   "supports": {
-    "align": false
+    "align": false,
+    "align_content": "matrix"
   }
 }

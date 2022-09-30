@@ -13,6 +13,7 @@
 	window.addEventListener( 'load', function( event ) {
 		const timed    = document.querySelectorAll( '.mai-popup-time' );
 		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
+		const loads    = document.querySelectorAll( '.mai-popup-load' );
 		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 
 		if ( ! ( timed.length || scrolls.length || triggers.length ) ) {
@@ -35,15 +36,17 @@
 
 			const current  = document.activeElement;
 			const style    = popup.getAttribute( 'style' );
+			const animate  = popup.getAttribute( 'data-animate' );
 			const instance = maiPopups.create( popup,
 				{
 					onShow: (instance) => {
 						// Popup is displaying.
 						isPopped = true;
 
-						// Set inline styling from our wrapper.
+						// Set attributes from our wrapper.
 						var el = instance.element();
 						el.setAttribute( 'style', style );
+						el.setAttribute( 'data-animate', animate );
 
 						// Close when hitting escape.
 						document.onkeyup = function( event ) {
@@ -70,7 +73,7 @@
 						var seconds = popup.getAttribute( 'data-expire' );
 
 						// If expiring.
-						if ( seconds && seconds > 30 ) {
+						if ( seconds ) {
 							// Build cookie.
 							var expire = new Date();
 							expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
@@ -134,6 +137,15 @@
 				setTimeout( function() {
 					doPopUp( popup );
 				}, parseInt( popup.getAttribute( 'data-delay' ) ) );
+			});
+		}
+
+		/*************************
+		 * Sets up on load popups. *
+		 *************************/
+		 if ( loads.length ) {
+			Array.from( loads ).forEach( function( popup ) {
+				doPopUp( popup );
 			});
 		}
 
