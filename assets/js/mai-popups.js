@@ -70,7 +70,7 @@
 						var seconds = popup.getAttribute( 'data-expire' );
 
 						// If expiring.
-						if ( seconds ) {
+						if ( seconds && seconds > 30 ) {
 							// Build cookie.
 							var expire = new Date();
 							expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
