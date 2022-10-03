@@ -129,7 +129,7 @@ final class Mai_Popups_Plugin {
 		foreach ( glob( MAI_POPUPS_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
 		// Blocks.
 		include MAI_POPUPS_PLUGIN_DIR . 'blocks/mai-popup/block.php';
-		include MAI_POPUPS_PLUGIN_DIR . 'blocks/mai-popup-close/block.php';
+		// include MAI_POPUPS_PLUGIN_DIR . 'blocks/mai-popup-close/block.php';
 	}
 
 	/**

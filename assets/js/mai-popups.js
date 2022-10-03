@@ -11,6 +11,7 @@
 	 * Wait until page is loaded.
 	 */
 	window.addEventListener( 'load', function( event ) {
+		// const body     = document.querySelector( 'body' );
 		const timed    = document.querySelectorAll( '.mai-popup-time' );
 		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
 		const loads    = document.querySelectorAll( '.mai-popup-load' );
@@ -34,21 +35,45 @@
 				return;
 			}
 
-			const current  = document.activeElement;
-			const style    = popup.getAttribute( 'style' );
-			const animate  = popup.getAttribute( 'data-animate' );
-			const overlay  = popup.getAttribute( 'data-overlay' );
-			const instance = maiPopups.create( popup,
+			const current    = document.activeElement;
+			const style      = popup.getAttribute( 'style' );
+			const animate    = popup.getAttribute( 'data-animate' );
+			const overlay    = popup.getAttribute( 'data-overlay' );
+			const horizontal = popup.getAttribute( 'data-horizontal' );
+			const vertical   = popup.getAttribute( 'data-vertical' );
+			const width      = popup.getAttribute( 'data-width' );
+			// const closeout = popup.getAttribute( 'data-close-outside' );
+			const instance   = maiPopups.create( popup,
 				{
 					onShow: (instance) => {
 						// Popup is displaying.
 						isPopped = true;
+
+						// Add body class.
+						// if ( 'true' === overlay ) {
+						// 	body.classList.add( 'mai-popup-overlay' );
+						// }
 
 						// Set attributes from our wrapper.
 						var el = instance.element();
 						el.setAttribute( 'style', style );
 						el.setAttribute( 'data-animate', animate );
 						el.setAttribute( 'data-overlay', overlay );
+						el.setAttribute( 'data-horizontal', horizontal );
+						el.setAttribute( 'data-vertical', vertical );
+
+						if ( width ) {
+							el.setAttribute( 'data-width', width );
+						}
+
+						// Close when hitting close icon.
+						var closes = el.querySelectorAll( '.mai-popup__close' );
+
+						Array.from( closes ).forEach( function( close ) {
+							close.onclick = function () {
+								instance.close();
+							}
+						});
 
 						// Close when hitting escape.
 						document.onkeyup = function( event ) {
@@ -70,6 +95,11 @@
 					onClose: (instance) => {
 						// Popup is no longer displaying.
 						isPopped = false;
+
+						// Remove body class.
+						// if ( 'true' === overlay ) {
+						// 	body.classList.remove( 'mai-popup-overlay' );
+						// }
 
 						// Get element.
 						var seconds = popup.getAttribute( 'data-expire' );

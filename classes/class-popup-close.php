@@ -20,6 +20,7 @@ class Mai_Popup_Close {
 	function __construct( $args = [] ) {
 		$this->defaults = [
 			'icon'       => true,
+			'icon_size'  => '1em',
 			'text'       => '',
 			'color'      => '',
 			'background' => 'currentColor',
@@ -48,6 +49,8 @@ class Mai_Popup_Close {
 	 */
 	function get() {
 		$styles = '';
+
+
 
 		if ( $this->args['color'] || $this->args['background'] ) {
 			$color      = $this->args['color'];

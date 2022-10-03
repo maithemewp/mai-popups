@@ -70,19 +70,24 @@ class Mai_Popup {
 		$args  = [
 			'id'           => $id,
 			'class'        => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
-			'style'        => sprintf( '--mai-popup-max-width:%s;', $width ),
+			'style'        => '',
 			'data-animate' => $this->args['animate'],
 			'data-overlay' => rest_sanitize_boolean( $this->args['overlay'] ) ? "true" : "false",
 		];
 
 		// Adds editor class.
 		if ( $this->args['preview'] ) {
-			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px))';
+			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px));';
 		}
 
-		if ( '100%' === $width ) {
-			$args['style'] .= '--mai-popup-margin:0;--mai-popup-border-radius:0;--mai-popup-close-right:16px;';
+		if ( $width ) {
+			$args['style'] .= sprintf( '--mai-popup-max-width:%s;', $width );
+
+			if ( '100%' === $width ) {
+				$args['data-width'] = 'full';
+			}
 		}
+
 
 		// Adds position custom properties.
 		if ( $this->args['position'] ) {
@@ -94,7 +99,10 @@ class Mai_Popup {
 			$horizontal = 'left' === $horizontal ? 'start' : $horizontal;
 			$horizontal = 'right' === $horizontal ? 'end' : $horizontal;
 
-			$args['style'] .= sprintf( '--mai-popup-justify-content:%s;--mai-popup-align-items:%s;', $vertical, $horizontal );
+			// $args['style'] .= sprintf( '--mai-popup-justify-content:%s;--mai-popup-align-items:%s;', $vertical, $horizontal );
+
+			$args['data-horizontal'] = $horizontal;
+			$args['data-vertical']   = $vertical;
 		}
 
 		// Sets trigger attributes.
@@ -135,7 +143,7 @@ class Mai_Popup {
 			$html .= '<div class="mai-popup__content">';
 				$html .= $this->get_inner_blocks();
 			$html .= '</div>';
-			// $html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
+			$html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
 		$html .= '</div>';
 
 		$first = false;
