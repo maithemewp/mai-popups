@@ -10,7 +10,6 @@
 	overflow-y: auto;
 	border-radius: var(--mai-popup-border-radius, var(--border-radius, 3px));
 	box-shadow: var(--mai-popup-box-shadow, 0 0 24px 8px rgba(0, 0, 0, 0.1));
-	transform: var(--mai-popup-transform, var(--mai-popup-transform-hidden, scale(0.9)));
 }
 
 .mai-popup[data-horizontal="start"][data-vertical="start"]:not([data-width]),

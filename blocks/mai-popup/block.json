@@ -5,7 +5,7 @@
   "category": "widgets",
   "keywords": [ "popup", "cta", "slide" ],
   "textdomain": "mai-popups",
-  "editorStyle": "file:./mai-popups-editor.css",
+  "editorStyle": "file:./editor.css",
   "acf": {
     "mode": "preview",
     "renderCallback": "mai_do_popup_block"

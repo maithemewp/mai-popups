@@ -78,17 +78,16 @@ class Mai_Popup {
 		// Adds editor class.
 		if ( $this->args['preview'] ) {
 			$args['class'] .= ' mai-popup';
-			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px));';
 		}
 
+		// Adds width attributes.
 		if ( $width ) {
 			$args['style'] .= sprintf( '--mai-popup-max-width:%s;', $width );
 
-			if ( '100%' === $width ) {
+			if ( in_array( $width, [ '100%', '100vw' ] ) ) {
 				$args['data-width'] = 'full';
 			}
 		}
-
 
 		// Adds position custom properties.
 		if ( $this->args['position'] ) {
@@ -142,7 +141,6 @@ class Mai_Popup {
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
 			$html .= $this->get_inner_blocks();
-			// $html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
 		$html .= '</div>';
 
