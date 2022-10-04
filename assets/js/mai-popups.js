@@ -11,26 +11,22 @@
 	 * Wait until page is loaded.
 	 */
 	window.addEventListener( 'load', function( event ) {
-		// const body     = document.querySelector( 'body' );
 		const timed    = document.querySelectorAll( '.mai-popup-time' );
 		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
 		const loads    = document.querySelectorAll( '.mai-popup-load' );
 		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 
-		if ( ! ( timed.length || scrolls.length || triggers.length ) ) {
+		// Bail if no popups.
+		if ( ! ( timed.length || scrolls.length || loads.length || triggers.length ) ) {
 			return;
 		}
 
-		// Set var for whether a popup is currently showing or not.
-		var isPopped = false;
-		// Set var for any popups waiting for another to close.
-		var waiting = [];
-
-		const doPopUp = function( popup ) {
+		const doPopUp = function( popup, event = false ) {
 			if ( 'string' === typeof popup ) {
 				popup = document.querySelector( popup );
 			}
 
+			// Bail if popup is empty.
 			if ( ! ( popup && popup.innerHTML ) ) {
 				return;
 			}
@@ -42,20 +38,14 @@
 			const horizontal = popup.getAttribute( 'data-horizontal' );
 			const vertical   = popup.getAttribute( 'data-vertical' );
 			const width      = popup.getAttribute( 'data-width' );
-			// const closeout = popup.getAttribute( 'data-close-outside' );
 			const instance   = maiPopups.create( popup,
 				{
 					onShow: (instance) => {
-						// Popup is displaying.
-						isPopped = true;
-
-						// Add body class.
-						// if ( 'true' === overlay ) {
-						// 	body.classList.add( 'mai-popup-overlay' );
-						// }
+						// Set vars.
+						var el     = instance.element();
+						var closes = el.querySelectorAll( '.mai-popup__close' );
 
 						// Set attributes from our wrapper.
-						var el = instance.element();
 						el.setAttribute( 'style', style );
 						el.setAttribute( 'data-animate', animate );
 						el.setAttribute( 'data-overlay', overlay );
@@ -66,41 +56,21 @@
 							el.setAttribute( 'data-width', width );
 						}
 
-						// Close when hitting close icon.
-						var closes = el.querySelectorAll( '.mai-popup__close' );
-
-						Array.from( closes ).forEach( function( close ) {
-							close.onclick = function () {
+						// Close when hitting escape.
+						document.addEventListener( 'keyup', function( event ) {
+							if ( event.key === "Escape" || event.key === "Esc" ) {
 								instance.close();
 							}
 						});
 
-						// Close when hitting escape.
-						document.onkeyup = function( event ) {
-							event = event || window.event;
-
-							var isEscape = false;
-
-							if ( 'key' in event ) {
-								isEscape = ( event.key === 'Escape' || event.key === 'Esc' );
-							} else {
-								isEscape = ( event.keyCode === 27 );
-							}
-
-							if ( isEscape ) {
+						// Close when hitting close icon or opening another popup.
+						closes.forEach( function( close ) {
+							close.addEventListener( 'click', function( event ) {
 								instance.close();
-							}
-						};
+							});
+						});
 					},
 					onClose: (instance) => {
-						// Popup is no longer displaying.
-						isPopped = false;
-
-						// Remove body class.
-						// if ( 'true' === overlay ) {
-						// 	body.classList.remove( 'mai-popup-overlay' );
-						// }
-
 						// Get element.
 						var seconds = popup.getAttribute( 'data-expire' );
 
@@ -125,47 +95,27 @@
 						if ( current ) {
 							current.focus();
 						}
-
-						// If any popups on wait list.
-						if ( waiting.length ) {
-							// Get next popup, the first in the wait list.
-							next = waiting[0];
-
-							// Remove popup from waiting list, so it doesn't fire again.
-							waiting.splice(0, 1);
-
-							// Launch popup.
-							setTimeout( function() {
-								next.show();
-							}, 500 );
-						}
 					}
 				}
 			);
 
 			// Show and set focus.
-			if ( ! isPopped ) {
-				instance.show(() => {
-					var element = instance.element();
-					var toFocus = element.querySelector( '.mai-popup__content' );
+			instance.show(() => {
+				var element = instance.element();
+				var toFocus = element.querySelector( '.mai-popup__content' );
 
-					if ( toFocus ) {
-						toFocus.setAttribute( 'tabindex', 0 );
-						toFocus.focus();
-					}
-				});
-			}
-			// If another popup is already showing, add to wait list.
-			else {
-				waiting.push( instance );
-			}
+				if ( toFocus ) {
+					toFocus.setAttribute( 'tabindex', 0 );
+					toFocus.focus();
+				}
+			});
 		}
 
 		/*************************
 		 * Sets up timed popups. *
 		 *************************/
 		if ( timed.length ) {
-			Array.from( timed ).forEach( function( popup ) {
+			timed.forEach( function( popup ) {
 				setTimeout( function() {
 					doPopUp( popup );
 				}, parseInt( popup.getAttribute( 'data-delay' ) ) );
@@ -176,7 +126,7 @@
 		 * Sets up on load popups. *
 		 *************************/
 		 if ( loads.length ) {
-			Array.from( loads ).forEach( function( popup ) {
+			loads.forEach( function( popup ) {
 				doPopUp( popup );
 			});
 		}
@@ -185,7 +135,7 @@
 		 * Sets up triggered popups. *
 		 *****************************/
 		 if ( triggers.length ) {
-			Array.from( triggers ).forEach( function( trigger ) {
+			triggers.forEach( function( trigger ) {
 				trigger.addEventListener( 'click', function( event ) {
 					event.preventDefault();
 					doPopUp( event.target.getAttribute( 'href' ) );
@@ -248,13 +198,12 @@
 				return Math.min(100, Math.max(0, percentage));
 			};
 
-			/**
-			 * Gets scroll data.
-			 */
+			// Set up scroll data.
 			var tracker    = document.querySelector( 'main' );
 			var scrollData = [];
 
-			Array.from( scrolls ).forEach( function( popup ) {
+			// Add the data.
+			scrolls.forEach( function( popup ) {
 				scrollData.push(
 					{
 						element: popup,
@@ -275,6 +224,7 @@
 				// Get scroll element.
 				var scrolled = getScrollPercentage( tracker );
 
+				//
 				scrollData.forEach((data, index) => {
 					if ( scrolled < data.distance ) {
 						return;

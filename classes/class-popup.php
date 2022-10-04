@@ -140,9 +140,9 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
-			$html .= '<div class="mai-popup__content">';
+			// $html .= '<div class="mai-popup__content">';
 				$html .= $this->get_inner_blocks();
-			$html .= '</div>';
+			// $html .= '</div>';
 			$html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
 		$html .= '</div>';
 
