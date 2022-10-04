@@ -61,11 +61,123 @@ function mai_register_popup_field_group() {
 		return;
 	}
 
+	acf_add_local_field_group(
+		[
+			'key'    => 'mai_popup_field_group',
+			'title'  => __( 'Mai Popup', 'mai-popups'),
+			'fields' => [
+				[
+					'key'     => 'mai_popup_trigger',
+					'label'   => __( 'Trigger', 'mai-popups' ),
+					'name'    => 'trigger',
+					'type'    => 'select',
+					'choices' => [
+						'manual' => __( 'Manual (Custom Link)', 'mai-popups' ),
+						'load'   => __( 'On Load', 'mai-popups' ),
+						'scroll' => __( 'Scroll Distance', 'mai-popups' ),
+						'time'   => __( 'Time Delay', 'mai-popups' ),
+					],
+				],
+				[
+					'key'     => 'mai_popup_animate',
+					'label'   => __( 'Animation', 'mai-popups' ),
+					'name'    => 'animate',
+					'type'    => 'select',
+					'choices' => [
+						'fade' => __( 'Fade In', 'mai-popups' ),
+						'up'   => __( 'Slide up', 'mai-popups' ),
+						'down' => __( 'Slide down', 'mai-popups' ),
+					],
+				],
+				[
+					'key'               => 'mai_popup_distance',
+					'label'             => __( 'Scroll distance', 'mai-popups' ),
+					'name'              => 'distance',
+					'type'              => 'number',
+					'default_value'     => 50,
+					'min'               => 0,
+					'max'               => '',
+					'step'              => 1,
+					'append'            => __( 'percent', 'mai-popups' ),
+					'conditional_logic' => [
+						[
+							[
+								'field'    => 'mai_popup_trigger',
+								'operator' => '==',
+								'value'    => 'scroll',
+							],
+						],
+					],
+				],
+				[
+					'key'               => 'mai_popup_delay',
+					'label'             => __( 'Delay', 'mai-popups' ),
+					'name'              => 'delay',
+					'type'              => 'number',
+					'min'               => 0,
+					'max'               => '',
+					'step'              => '.5',
+					'append'            => __( 'seconds', 'mai-popups' ),
+					'conditional_logic' => [
+						[
+							[
+								'field'    => 'mai_popup_trigger',
+								'operator' => '==',
+								'value'    => 'time',
+							],
+						],
+					],
+				],
+				[
+					'key'          => 'mai_popup_width',
+					'label'        => __( 'Width', 'mai-popups' ),
+					'instructions' => __( 'Accepts any CSS value (px, em, rem, vw, ch, etc.). Using 100% removes margin around content.', 'mai-popups' ),
+					'name'         => 'width',
+					'type'         => 'text',
+				],
+				[
+					'key'               => 'mai_popup_repeat',
+					'label'             => __( 'Repeat', 'mai-popups' ),
+					'instructions'      => __( 'The time it takes before this popup will be displayed again for the same user. Use 0 to always show, but beware that this may frustrate your website users.', 'mai-popups' ),
+					'name'              => 'repeat',
+					'type'              => 'text',
+					'default_value'     => '7 days', // Can't translate. English for `strtotime()`.
+					'conditional_logic' => [
+						[
+							[
+								'field'    => 'mai_popup_trigger',
+								'operator' => '!=',
+								'value'    => 'manual',
+							],
+						],
+					],
+				],
+				[
+					'key'          => 'mai_popup_link',
+					'label'        => __( 'Link', 'mai-popups' ),
+					'instructions' => __( 'Launch this popup by linking any text or button link to the anchor below. The popup must be on the page for the link to work.', 'mai-popups' ),
+					'name'         => 'id',
+					'type'         => 'text',
+				],
+			],
+			'location' => [
+				[
+					[
+						'param'    => 'block',
+						'operator' => '==',
+						'value'    => 'acf/mai-popup',
+					],
+				],
+			],
+		]
+	);
 }
 
-add_filter( 'acf/prepare_field/key=field_6333560d1d02e', 'mai_prepare_popup_id_field' );
+add_filter( 'acf/prepare_field/key=mai_popup_link', 'mai_prepare_popup_id_field' );
 /**
  * Sets popup ID and forces readonly.
+ *
+ * @since 0.1.0
  *
  * @param array $field The field data.
  *

@@ -77,6 +77,7 @@ class Mai_Popup {
 
 		// Adds editor class.
 		if ( $this->args['preview'] ) {
+			$args['class'] .= ' mai-popup';
 			$args['style'] .= 'overflow:hidden;border-radius:var(--mai-popup-border-radius,var(--border-radius,3px));';
 		}
 
@@ -140,10 +141,9 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
-			// $html .= '<div class="mai-popup__content">';
-				$html .= $this->get_inner_blocks();
-			// $html .= '</div>';
-			$html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
+			$html .= $this->get_inner_blocks();
+			// $html .= ! $this->args['preview'] ? sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) ) : '';
+			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
 		$html .= '</div>';
 
 		$first = false;

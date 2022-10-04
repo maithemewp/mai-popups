@@ -71,8 +71,6 @@
 	--mai-popup-max-width: 600px;
 }
 
-
-
 .mai-popup[data-animate="up"] {
 	--mai-popup-transform-hidden: translateY(50%);
 	--mai-popup-transform-visible: translateY(0);
@@ -153,6 +151,7 @@
 	padding: var(--mai-popup-close-padding, 10px);
 	color: var(--mai-popup-close-color, var(--color-heading, currentColor));
 	background: var(--mai-popup-close-background, rgba(255, 255, 255, 0.5));
+	border: 0;
 	border-radius: 50%;
 }
 

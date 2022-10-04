@@ -21,6 +21,8 @@
 			return;
 		}
 
+		let open = [];
+
 		const doPopUp = function( popup, event = false ) {
 			if ( 'string' === typeof popup ) {
 				popup = document.querySelector( popup );
@@ -41,6 +43,9 @@
 			const instance   = maiPopups.create( popup,
 				{
 					onShow: (instance) => {
+						// Set as open.
+						open.push( instance );
+
 						// Set vars.
 						var el     = instance.element();
 						var closes = el.querySelectorAll( '.mai-popup__close' );
@@ -56,13 +61,6 @@
 							el.setAttribute( 'data-width', width );
 						}
 
-						// Close when hitting escape.
-						document.addEventListener( 'keyup', function( event ) {
-							if ( event.key === "Escape" || event.key === "Esc" ) {
-								instance.close();
-							}
-						});
-
 						// Close when hitting close icon or opening another popup.
 						closes.forEach( function( close ) {
 							close.addEventListener( 'click', function( event ) {
@@ -71,6 +69,9 @@
 						});
 					},
 					onClose: (instance) => {
+						// Remove from open popups.
+						open = open.splice( open.indexOf( instance ), 1 );
+
 						// Get element.
 						var seconds = popup.getAttribute( 'data-expire' );
 
@@ -110,6 +111,19 @@
 				}
 			});
 		}
+
+		// Close last open popup with escape key.
+		document.addEventListener( 'keyup', function( event ) {
+			// Bail if none open.
+			if ( ! open.length ) {
+				return;
+			}
+
+			if ( event.key === "Escape" || event.key === "Esc" ) {
+				var last = open.pop();
+				last.close();
+			}
+		});
 
 		/*************************
 		 * Sets up timed popups. *
