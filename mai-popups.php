@@ -3,7 +3,7 @@
 /**
  * Plugin Name:     Mai Popups
  * Plugin URI:      https://bizbudding.com/mai-theme/
- * Description:     Lightweight and flexible popup and slideup plugin built for blocks with Mai Theme.
+ * Description:     A lightweight and flexible popup, slideup, notice, and hello bar block.
  * Version:         0.1.0
  *
  * Author:          BizBudding
