@@ -3,6 +3,13 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
+/**
+ * Gets defauilt args.
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
 function maipopups_get_defaults() {
 	$defaults = apply_filters( 'mai_popup_default_args',
 		[

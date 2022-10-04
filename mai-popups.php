@@ -166,6 +166,9 @@ final class Mai_Popups_Plugin {
 		// Setup the updater.
 		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/maithemewp/mai-popups', __FILE__, 'mai-popups' );
 
+		// Set the stable branch.
+		$updater->setBranch( 'main' );
+
 		// Maybe set github api token.
 		if ( defined( 'MAI_GITHUB_API_TOKEN' ) ) {
 			$updater->setAuthentication( MAI_GITHUB_API_TOKEN );
