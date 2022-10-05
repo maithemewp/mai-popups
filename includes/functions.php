@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || die;
  */
 function mai_do_popup( $args, $content = '' ) {
 	$popup = new Mai_Popup( $args, $content );
-	$popup->do();
+	$popup->render();
 }
 
 /**
@@ -28,16 +28,16 @@ function mai_do_popup( $args, $content = '' ) {
 function maipopups_get_defaults() {
 	$defaults = apply_filters( 'mai_popup_default_args',
 		[
-			'id'        => '',
-			'trigger'   => 'manual', // 'scroll', 'timed', 'load', 'manual'.
-			'animate'   => 'fade', // 'fade', 'up', 'down'.
-			'distance'  => '50', // percentage of scroll.
-			'delay'     => '3', // time before showing when using 'timed' type. Uses float so it can be decimals.
-			'position'  => 'center center', // position of popup.
-			'width'     => '', // max-width of popup.
-			'repeat'    => '7 days', // time before showing the popu to the same user.
-			'condition' => true, // bool or callable function to determine whether to display the popup. This could check for logged in, member, etc.
-			'preview'   => false,
+			'id'        => '', // The HTML id when trigger is manual. Must start with `mai-popup-`.
+			'trigger'   => 'manual', // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
+			'animate'   => 'fade', // The type of animation. Accepts 'fade', 'up', and 'down'.
+			'distance'  => '50', // The percentage distance of scroll before triggering popup when the trigger is 'scroll'.
+			'delay'     => '3', // The time in seconds before displaying the popup when using 'timed' type. Uses float so it can be decimals.
+			'position'  => 'center center', // The position of popup, with space-separated values. First value is vertical, second value is horizontal. Accepts 'start', 'center', and 'end'.
+			'width'     => '', // The max-width of the popup. Accepts any CSS value.
+			'repeat'    => '7 days', // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
+			'condition' => true, // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
+			'preview'   => false, // If viewing in editor or not.
 		]
 	);
 
