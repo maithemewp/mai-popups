@@ -28,8 +28,8 @@ class Mai_Popup {
 		$args['id']        = sanitize_key( $args['id'] );
 		$args['trigger']   = sanitize_key( $args['trigger'] );
 		$args['animate']   = sanitize_key( $args['animate'] );
-		$args['distance']  = esc_html( $args['distance'] );
-		$args['delay']     = esc_html( $args['delay'] );
+		$args['distance']  = preg_replace( '/[0-9]+/', '', $args['distance'] );
+		$args['delay']     = preg_replace( '/[0-9]+/', '', $args['delay'] );
 		$args['position']  = esc_html( $args['position'] );
 		$args['width']     = esc_html( $args['width'] );
 		$args['repeat']    = esc_html( $args['repeat'] );
@@ -38,30 +38,18 @@ class Mai_Popup {
 
 		// Set props.
 		$this->args    = $args;
-		$this->content = $content;
-		// $args['content']   = $args['block'] ? '<InnerBlocks />' : wp_kses_post( $args['content'] );
+		$this->content = wp_kses_post( $content );
 	}
 
 	/**
 	 * Display the popup.
+	 * Hooks popup content into footer.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @return void
 	 */
 	function render() {
-		echo $this->get();
-	}
-
-	/**
-	 * Do the popup.
-	 * Hooks into the footer.
-	 *
-	 * @since 0.2.0
-	 *
-	 * @return void
-	 */
-	function do() {
 		if ( $this->is_footer() ) {
 			// Display where we are and hope for the best.
 			echo $this->get();
@@ -96,6 +84,7 @@ class Mai_Popup {
 			}
 		}
 
+		// If first, enqueue scripts and styles.
 		if ( $first ) {
 			if ( $this->is_footer() ) {
 				$this->enqueue();
@@ -148,11 +137,11 @@ class Mai_Popup {
 		switch ( $this->args['trigger'] ) {
 			case 'time':
 				// Set delay in milliseconds.
-				$args['data-delay'] = absint( $this->args['delay'] ) * 1000;
+				$args['data-delay'] = $this->args['delay'] * 1000;
 			break;
 			case 'scroll':
 				// Set scroll distance.
-				$args['data-distance'] = absint( $this->args['distance'] );
+				$args['data-distance'] = $this->args['distance'];
 			break;
 		}
 
