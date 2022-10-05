@@ -196,7 +196,7 @@ class Mai_Popup {
 	 * @return bool
 	 */
 	function is_footer() {
-		return current_action( 'wp_footer' ) || did_action( 'wp_footer' );
+		return 'wp_footer' === current_action() || did_action( 'wp_footer' );
 	}
 
 	/**
