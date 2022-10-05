@@ -19,7 +19,7 @@ class Mai_Popup {
 	 *
 	 * @return void
 	 */
-	function __construct( $args = [], $content = null ) {
+	function __construct( $args = [], $content = '' ) {
 		// Get args.
 		$args = shortcode_atts( maipopups_get_defaults(), $args, $this->key );
 		$args = array_map( 'trim', $args );
@@ -39,8 +39,7 @@ class Mai_Popup {
 		// Set props.
 		$this->args    = $args;
 		$this->content = $content;
-				// $args['content']   = $args['block'] ? '<InnerBlocks />' : wp_kses_post( $args['content'] ); // Must be after 'block';
-
+		// $args['content']   = $args['block'] ? '<InnerBlocks />' : wp_kses_post( $args['content'] );
 	}
 
 	/**

@@ -14,8 +14,8 @@ defined( 'ABSPATH' ) || die;
  * @return void
  */
 function mai_do_popup( $args, $content = '' ) {
-	$popup = new Mai_Popup;
-	$popup->do( $args );
+	$popup = new Mai_Popup( $args, $content );
+	$popup->do();
 }
 
 /**
