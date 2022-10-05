@@ -180,12 +180,9 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
-			// $html .= $this->get_content();
 			$html .= $this->content;
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
 		$html .= '</div>';
-
-		ray( $html );
 
 		$first = false;
 
@@ -215,18 +212,6 @@ class Mai_Popup {
 
 		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/css/mai-popups{$suffix}.css", [], MAI_POPUPS_VERSION );
 		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/js/mai-popups{$suffix}.js", [], MAI_POPUPS_VERSION, true );
-	}
-
-	/**
-	 * Gets inner blocks element.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @return string
-	 */
-	function get_content() {
-		// ray( $this->args['content'] );
-		// return $this->args['content'] ?: '<InnerBlocks />';
 	}
 }
 // End ! class_exists check.
