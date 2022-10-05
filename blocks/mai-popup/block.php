@@ -44,11 +44,10 @@ function mai_do_popup_block( $attributes, $content = '', $is_preview = false, $p
 	$args['text']     = get_field( 'text' );
 	$args['delay']    = get_field( 'delay' );
 	$args['width']    = get_field( 'width' );
-	$args['overlay']  = get_field( 'overlay' );
 	$args['repeat']   = get_field( 'repeat' );
 	$args['preview']  = $is_preview;
 
-	$popup = new Mai_Popup( $args );
+	$popup = new Mai_Popup( $args, $content );
 	$popup->render();
 }
 

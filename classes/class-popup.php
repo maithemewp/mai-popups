@@ -8,8 +8,8 @@ if ( ! class_exists( 'Mai_Popup' ) ):
 class Mai_Popup {
 	protected $version = '0.1.0';
 	protected $key = 'mai_popup';
-	protected $defaults;
 	protected $args;
+	protected $content;
 	protected static $index = 1;
 
 	/**
@@ -19,10 +19,28 @@ class Mai_Popup {
 	 *
 	 * @return void
 	 */
-	function __construct( $args = [] ) {
-		$this->defaults = maipopups_get_defaults();
-		$this->args     = array_map( 'esc_html', shortcode_atts( $this->defaults, $args, $this->key ) );
-		$this->args     = array_map( 'trim', $this->args );
+	function __construct( $args = [], $content = null ) {
+		// Get args.
+		$args = shortcode_atts( maipopups_get_defaults(), $args, $this->key );
+		$args = array_map( 'trim', $args );
+
+		// Sanitize args.
+		$args['id']        = sanitize_key( $args['id'] );
+		$args['trigger']   = sanitize_key( $args['trigger'] );
+		$args['animate']   = sanitize_key( $args['animate'] );
+		$args['distance']  = esc_html( $args['distance'] );
+		$args['delay']     = esc_html( $args['delay'] );
+		$args['position']  = esc_html( $args['position'] );
+		$args['width']     = esc_html( $args['width'] );
+		$args['repeat']    = esc_html( $args['repeat'] );
+		$args['condition'] = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
+		$args['preview']   = rest_sanitize_boolean( $args['preview'] );
+
+		// Set props.
+		$this->args    = $args;
+		$this->content = $content;
+				// $args['content']   = $args['block'] ? '<InnerBlocks />' : wp_kses_post( $args['content'] ); // Must be after 'block';
+
 	}
 
 	/**
@@ -34,6 +52,26 @@ class Mai_Popup {
 	 */
 	function render() {
 		echo $this->get();
+	}
+
+	/**
+	 * Do the popup.
+	 * Hooks into the footer.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @return void
+	 */
+	function do() {
+		if ( $this->is_footer() ) {
+			// Display where we are and hope for the best.
+			echo $this->get();
+		} else {
+			// Display in footer.
+			add_action( 'wp_footer', function() {
+				echo $this->get();
+			});
+		}
 	}
 
 	/**
@@ -60,7 +98,11 @@ class Mai_Popup {
 		}
 
 		if ( $first ) {
-			add_action( 'wp_footer', [ $this, 'enqueue' ] );
+			if ( $this->is_footer() ) {
+				$this->enqueue();
+			} else {
+				add_action( 'wp_footer', [ $this, 'enqueue' ] );
+			}
 		}
 
 		$html  = '';
@@ -72,7 +114,6 @@ class Mai_Popup {
 			'class'        => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
 			'style'        => '',
 			'data-animate' => $this->args['animate'],
-			'data-overlay' => rest_sanitize_boolean( $this->args['overlay'] ) ? "true" : "false",
 		];
 
 		// Adds editor class.
@@ -99,8 +140,7 @@ class Mai_Popup {
 			$horizontal = 'left' === $horizontal ? 'start' : $horizontal;
 			$horizontal = 'right' === $horizontal ? 'end' : $horizontal;
 
-			// $args['style'] .= sprintf( '--mai-popup-justify-content:%s;--mai-popup-align-items:%s;', $vertical, $horizontal );
-
+			// Set args.
 			$args['data-horizontal'] = $horizontal;
 			$args['data-vertical']   = $vertical;
 		}
@@ -140,13 +180,27 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<div%s>', $atts );
-			$html .= $this->get_inner_blocks();
+			// $html .= $this->get_content();
+			$html .= $this->content;
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
 		$html .= '</div>';
+
+		ray( $html );
 
 		$first = false;
 
 		return $html;
+	}
+
+	/**
+	 * If in or after the footer.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @return bool
+	 */
+	function is_footer() {
+		return current_action( 'wp_footer' ) || did_action( 'wp_footer' );
 	}
 
 	/**
@@ -170,8 +224,9 @@ class Mai_Popup {
 	 *
 	 * @return string
 	 */
-	function get_inner_blocks() {
-		return '<InnerBlocks />';
+	function get_content() {
+		// ray( $this->args['content'] );
+		// return $this->args['content'] ?: '<InnerBlocks />';
 	}
 }
 // End ! class_exists check.
