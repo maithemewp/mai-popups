@@ -38,7 +38,7 @@ class Mai_Popup {
 
 		// Set props.
 		$this->args    = $args;
-		$this->content = wp_kses_post( $content );
+		$this->content = $content; // Sanitizing strips block attributes.
 	}
 
 	/**
