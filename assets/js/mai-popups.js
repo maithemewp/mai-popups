@@ -36,7 +36,6 @@
 			const current    = document.activeElement;
 			const style      = popup.getAttribute( 'style' );
 			const animate    = popup.getAttribute( 'data-animate' );
-			const overlay    = popup.getAttribute( 'data-overlay' );
 			const horizontal = popup.getAttribute( 'data-horizontal' );
 			const vertical   = popup.getAttribute( 'data-vertical' );
 			const width      = popup.getAttribute( 'data-width' );
@@ -53,7 +52,6 @@
 						// Set attributes from our wrapper.
 						el.setAttribute( 'style', style );
 						el.setAttribute( 'data-animate', animate );
-						el.setAttribute( 'data-overlay', overlay );
 						el.setAttribute( 'data-horizontal', horizontal );
 						el.setAttribute( 'data-vertical', vertical );
 
