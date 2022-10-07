@@ -47,7 +47,7 @@
 
 						// Set vars.
 						var el     = instance.element();
-						var closes = el.querySelectorAll( '.mai-popup__close' );
+						var closes = el.querySelectorAll( '.mai-popup__close', '.mai-popup-close' ); // Use mai-popup-close class on any link or button in your popup to add another close trigger.
 
 						// Set attributes from our wrapper.
 						el.setAttribute( 'style', style );
