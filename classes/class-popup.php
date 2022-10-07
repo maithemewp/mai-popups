@@ -99,7 +99,7 @@ class Mai_Popup {
 		$atts  = '';
 		$args  = [
 			'id'           => $id,
-			'class'        => sprintf( 'mai-popup-%s', $this->args['trigger'] ),
+			'class'        => 'mai-popup' . sprintf( ' mai-popup-%s', $this->args['trigger'] ),
 			'style'        => '',
 			'data-animate' => $this->args['animate'],
 		];
@@ -167,10 +167,11 @@ class Mai_Popup {
 		}
 
 		// Build HTML.
-		$html .= sprintf( '<div%s>', $atts );
+		$html .= sprintf( '<dialog%s>', $atts );
+			// $html .= sprintf( '<div class="mai-popup__placeholder">%s</div>', $this->content );
 			$html .= $this->content;
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
-		$html .= '</div>';
+		$html .= '</dialog>';
 
 		$first = false;
 
