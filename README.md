@@ -2,7 +2,7 @@
 A lightweight and flexible popup, slideup, notice, and hello bar block. Works best with Mai Theme, but should work in all block-based themes. Requires ACF Pro v6+.
 
 ## Usage
-###Mai Popup block
+### Mai Popup block
 Add Mai Popup block to any post/page and configure the settings. Create your popup content using any blocks.
 
 ### Helper function
