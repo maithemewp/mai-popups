@@ -3,9 +3,9 @@
 	 * Wait until page is loaded.
 	 */
 	window.addEventListener( 'load', function( event ) {
-		const timed    = document.querySelectorAll( '.mai-popup-time' );
-		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
-		const loads    = document.querySelectorAll( '.mai-popup-load' );
+		const timed    = document.querySelectorAll( '.mai-popup[data-type="time"]' );
+		const scrolls  = document.querySelectorAll( '.mai-popup[data-type="scroll"]' );
+		const loads    = document.querySelectorAll( '.mai-popup[data-type="load"]' );
 		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 
 		// Bail if no popups.
@@ -13,7 +13,7 @@
 			return;
 		}
 
-		// let open = [];
+		let open = [];
 
 		const openPopup = function( popup, event = false ) {
 			if ( 'string' === typeof popup ) {
@@ -25,82 +25,109 @@
 				return;
 			}
 
-			popup.showModal();
+			// Set as open.
+			open.push( popup );
 
-			const closeBtn = popup.querySelector( '.mai-popup__close' );
+			// Check if centered modal.
+			const modal = 'center' === popup.getAttribute( 'data-vertical' ) && 'center' === popup.getAttribute( 'data-horizontal' );
 
-			closeBtn.addEventListener( 'click', function( event ) {
-				popup.close();
+			// Maybe add overlay.
+			if ( modal ) {
+				var overlay = document.createElement( 'div' );
+				overlay.setAttribute( 'class', 'mai-popup-overlay' );
+				popup.before( overlay );
+			}
+
+			// Show popup.
+			popup.show();
+
+			// Close when hitting close icon.
+			popup.querySelectorAll( '.mai-popup__close', '.mai-popup-close' ).forEach( ( close ) => {
+				close.addEventListener( 'click', ( event ) => {
+					closePopup( popup );
+				});
 			});
 
-			// const style      = popup.getAttribute( 'style' );
-			// const animate    = popup.getAttribute( 'data-animate' );
-			// const horizontal = popup.getAttribute( 'data-horizontal' );
-			// const vertical   = popup.getAttribute( 'data-vertical' );
-			// const width      = popup.getAttribute( 'data-width' );
+			// Adds event listener for close event.
+			popup.addEventListener( 'close', ( event ) => {
+				closePopup( popup );
+			}, { once: true } );
 
-			// Set vars.
-			// var el     = instance.element();
-			// var closes = el.querySelectorAll( '.mai-popup__close' );
-
-			// Set attributes from our wrapper.
-			// el.setAttribute( 'style', style );
-			// el.setAttribute( 'data-animate', animate );
-			// el.setAttribute( 'data-horizontal', horizontal );
-			// el.setAttribute( 'data-vertical', vertical );
-
-			// if ( width ) {
-			// 	el.setAttribute( 'data-width', width );
-			// }
-
-			// Close when hitting close icon or opening another popup.
-			// closes.forEach( function( close ) {
-			// 	close.addEventListener( 'click', function( event ) {
-			// 		instance.close();
-			// 	});
-			// });
+			// Adds event listener to close modal when clicking outside.
+			if ( modal ) {
+				overlay.addEventListener( 'click', ( event ) => {
+					closePopup( popup );
+				}, { once: true } );
+			}
 		}
 
 		const closePopup = function( popup ) {
-			// Remove from open popups.
-			// open = open.splice( open.indexOf( instance ), 1 );
+			/**
+			 * Prevent infinite loops.
+			 * This function is called via clicks when it's modal().
+			 */
+			if ( ! popup.open ) {
+				return;
+			}
 
-			// Get element.
-			var seconds = popup.getAttribute( 'data-expire' );
+			// Remove from open popups.
+			open = open.splice( open.indexOf( popup ), 1 );
+
+			// Get data.
+			const seconds  = popup.getAttribute( 'data-expire' );
+			const previous = popup.previousElementSibling;
+			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
 
 			// If expiring.
 			if ( seconds ) {
 				// Build cookie.
-				var expire = new Date();
+				const expire = new Date();
 				expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
-				var name   = popup.getAttribute( 'id' );
-				var utc    = expire.toUTCString();
-				var cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
+				const name   = popup.getAttribute( 'id' );
+				const utc    = expire.toUTCString();
+				const cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
 
 				// Set cookie.
 				document.cookie = cookie;
 			}
 
-			popup.close();
+			// Add hidden class, for CSS animation.
+			popup.setAttribute( 'closing', '' );
+
+			if ( overlay ) {
+				overlay.setAttribute( 'closing', '' );
+			}
+
+			// Close popup after animation is done.
+			popup.addEventListener( 'animationend', () => {
+				popup.removeAttribute( 'closing' );
+				popup.close();
+
+				// Remove overlay.
+				if ( overlay ) {
+					overlay.remove();
+				}
+			}, { once: true } );
 		}
 
-		// // Show and set focus.
-		// instance.show(() => {
-		// 	var element = instance.element();
-		// 	var toFocus = element.querySelector( '.mai-popup__content' );
+		// Close last open popup with escape key.
+		document.addEventListener( 'keyup', ( event ) => {
+			// Bail if none open.
+			if ( ! open.length ) {
+				return;
+			}
 
-		// 	if ( toFocus ) {
-		// 		toFocus.setAttribute( 'tabindex', 0 );
-		// 		toFocus.focus();
-		// 	}
-		// });
+			if ( event.key === "Escape" || event.key === "Esc" ) {
+				closePopup( open.pop() );
+			}
+		});
 
 		/*************************
 		 * Sets up timed popups. *
 		 *************************/
 		if ( timed.length ) {
-			timed.forEach( function( popup ) {
-				setTimeout( function() {
+			timed.forEach( ( popup ) => {
+				setTimeout( () => {
 					openPopup( popup );
 				}, parseInt( popup.getAttribute( 'data-delay' ) ) );
 			});
@@ -110,7 +137,7 @@
 		 * Sets up on load popups. *
 		 *************************/
 		 if ( loads.length ) {
-			loads.forEach( function( popup ) {
+			loads.forEach( ( popup ) => {
 				openPopup( popup );
 			});
 		}
@@ -119,8 +146,8 @@
 		 * Sets up triggered popups. *
 		 *****************************/
 		 if ( triggers.length ) {
-			triggers.forEach( function( trigger ) {
-				trigger.addEventListener( 'click', function( event ) {
+			triggers.forEach( ( trigger ) => {
+				trigger.addEventListener( 'click', ( event ) => {
 					event.preventDefault();
 					openPopup( event.target.getAttribute( 'href' ) );
 				}, false );
@@ -137,7 +164,7 @@
 			 * @link https://vanillajstoolkit.com/helpers/debounce/
 			 * @param {Function} fn The function to debounce.
 			 */
-			const debounce = function( fn ) {
+			const debounce = ( fn ) => {
 				// Setup a timer.
 				let timeout;
 
@@ -153,7 +180,7 @@
 					}
 
 					// Setup the new requestAnimationFrame().
-					timeout = window.requestAnimationFrame( function () {
+					timeout = window.requestAnimationFrame( () => {
 						fn.apply(context, args);
 					});
 				};
@@ -166,7 +193,7 @@
 			 *
 			 * @returns int
 			 */
-			const getScrollPercentage = function( element ) {
+			const getScrollPercentage = ( element ) => {
 				if ( ! element ) {
 					return;
 				}
@@ -187,11 +214,11 @@
 			var scrollData = [];
 
 			// Add the data.
-			scrolls.forEach( function( popup ) {
+			scrolls.forEach( ( popup ) => {
 				scrollData.push(
 					{
-						element: popup,
 						distance: parseInt( popup.getAttribute( 'data-distance' ) ),
+						element: popup,
 					}
 				);
 			});
@@ -199,7 +226,7 @@
 			/**
 			 * Adds scroll listener to trigger based on scroll percentage.
 			 */
-			window.addEventListener( 'scroll', debounce(() => {
+			window.addEventListener( 'scroll', debounce( () => {
 				// Bail if scroll popups are empty.
 				if ( ! scrollData.length ) {
 					return false;
@@ -208,8 +235,8 @@
 				// Get scroll element.
 				var scrolled = getScrollPercentage( tracker );
 
-				//
-				scrollData.forEach((data, index) => {
+				// Check scroll distance of each popup.
+				scrollData.forEach( (data, index) => {
 					if ( scrolled < data.distance ) {
 						return;
 					}

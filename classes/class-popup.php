@@ -28,8 +28,8 @@ class Mai_Popup {
 		$args['id']        = sanitize_key( $args['id'] );
 		$args['trigger']   = sanitize_key( $args['trigger'] );
 		$args['animate']   = sanitize_key( $args['animate'] );
-		$args['distance']  = preg_replace( '/[0-9]+/', '', $args['distance'] );
-		$args['delay']     = preg_replace( '/[0-9]+/', '', $args['delay'] );
+		$args['distance']  = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
+		$args['delay']     = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
 		$args['position']  = esc_html( $args['position'] );
 		$args['width']     = esc_html( $args['width'] );
 		$args['repeat']    = esc_html( $args['repeat'] );
@@ -99,15 +99,16 @@ class Mai_Popup {
 		$atts  = '';
 		$args  = [
 			'id'           => $id,
-			'class'        => 'mai-popup' . sprintf( ' mai-popup-%s', $this->args['trigger'] ),
+			'class'        => 'mai-popup',
 			'style'        => '',
+			'data-type'    => $this->args['trigger'],
 			'data-animate' => $this->args['animate'],
 		];
 
 		// Adds editor class.
-		if ( $this->args['preview'] ) {
-			$args['class'] .= ' mai-popup';
-		}
+		// if ( $this->args['preview'] ) {
+		// 	$args['class'] .= ' mai-popup';
+		// }
 
 		// Adds width attributes.
 		if ( $width ) {
@@ -163,12 +164,15 @@ class Mai_Popup {
 
 		// Build args.
 		foreach ( $args as $att => $value ) {
+			if ( ! $value ) {
+				continue;
+			}
+
 			$atts .= sprintf( ' %s="%s"', $att, $value );
 		}
 
 		// Build HTML.
 		$html .= sprintf( '<dialog%s>', $atts );
-			// $html .= sprintf( '<div class="mai-popup__placeholder">%s</div>', $this->content );
 			$html .= $this->content;
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
 		$html .= '</dialog>';
