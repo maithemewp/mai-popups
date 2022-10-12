@@ -25,75 +25,8 @@
 				return;
 			}
 
-<<<<<<< HEAD
-			const current    = document.activeElement;
-			const style      = popup.getAttribute( 'style' );
-			const animate    = popup.getAttribute( 'data-animate' );
-			const horizontal = popup.getAttribute( 'data-horizontal' );
-			const vertical   = popup.getAttribute( 'data-vertical' );
-			const width      = popup.getAttribute( 'data-width' );
-			const instance   = maiPopups.create( popup,
-				{
-					onShow: (instance) => {
-						// Set as open.
-						open.push( instance );
-
-						// Set vars.
-						var el     = instance.element();
-						var closes = el.querySelectorAll( '.mai-popup__close', '.mai-popup-close' ); // Use mai-popup-close class on any link or button in your popup to add another close trigger.
-
-						// Set attributes from our wrapper.
-						el.setAttribute( 'style', style );
-						el.setAttribute( 'data-animate', animate );
-						el.setAttribute( 'data-horizontal', horizontal );
-						el.setAttribute( 'data-vertical', vertical );
-
-						if ( width ) {
-							el.setAttribute( 'data-width', width );
-						}
-
-						// Close when hitting close icon or opening another popup.
-						closes.forEach( function( close ) {
-							close.addEventListener( 'click', function( event ) {
-								instance.close();
-							});
-						});
-					},
-					onClose: (instance) => {
-						// Remove from open popups.
-						open = open.splice( open.indexOf( instance ), 1 );
-
-						// Get element.
-						var seconds = popup.getAttribute( 'data-expire' );
-
-						// If expiring.
-						if ( seconds ) {
-							// Build cookie.
-							var expire = new Date();
-							expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
-							var name   = popup.getAttribute( 'id' );
-							var utc    = expire.toUTCString();
-							var cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
-
-							// Set cookie.
-							document.cookie = cookie;
-						}
-
-						// Moves popup content back to the original element and returns focus.
-						var el = instance.element();
-						popup.innerHTML = el.querySelector( '.mai-popup__placeholder' ).innerHTML;
-
-						// Focus on original element. Scroll popups may not have active element yet.
-						if ( current ) {
-							current.focus();
-						}
-					}
-				}
-			);
-=======
 			// Set as open.
 			open.push( popup );
->>>>>>> dialog
 
 			// Check if centered modal.
 			const modal = 'center' === popup.getAttribute( 'data-vertical' ) && 'center' === popup.getAttribute( 'data-horizontal' );
