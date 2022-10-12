@@ -11,7 +11,7 @@
 	bottom: var(--mai-popup-spacing);
 	left: var(--mai-popup-spacing);
 	z-index: 9999;
-	width: 100%;
+	width: calc(100% - (var(--mai-popup-spacing) * 2));
 	max-width: var(--mai-popup-max-width, 100%);
 	margin: var(--mai-popup-margin, auto);
 	padding: var(--mai-popup-padding, 0);
