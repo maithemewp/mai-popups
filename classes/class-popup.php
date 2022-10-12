@@ -6,7 +6,6 @@ if ( ! class_exists( 'Mai_Popup' ) ):
  * Mai Popup class.
  */
 class Mai_Popup {
-	protected $version = '0.1.0';
 	protected $key = 'mai_popup';
 	protected $args;
 	protected $content;

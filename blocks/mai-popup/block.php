@@ -8,7 +8,6 @@ add_action( 'acf/init', 'mai_register_popup_block' );
  * Register Mai Popup block.
  *
  * @since 0.1.0
- * @since TBD Converted to block.json via `register_block_type()`.
  *
  * @return void
  */
