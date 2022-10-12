@@ -1,19 +1,11 @@
-/**
- * basicScroll 5.0.4.
- *
- * Changed the model from basiScroll to maiPopups.
- * Changed class names from basicLightbox to mai-popup.
- */
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).maiPopups=e()}}((function(){return function e(n,t,o){function r(c,u){if(!t[c]){if(!n[c]){var s="function"==typeof require&&require;if(!u&&s)return s(c,!0);if(i)return i(c,!0);var a=new Error("Cannot find module '"+c+"'");throw a.code="MODULE_NOT_FOUND",a}var l=t[c]={exports:{}};n[c][0].call(l.exports,(function(e){return r(n[c][1][e]||e)}),l,l.exports,e,n,t,o)}return t[c].exports}for(var i="function"==typeof require&&require,c=0;c<o.length;c++)r(o[c]);return r}({1:[function(e,n,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.create=t.visible=void 0;var o=function(e){var n=arguments.length>1&&void 0!==arguments[1]&&arguments[1],t=document.createElement("div");return t.innerHTML=e.trim(),!0===n?t.children:t.firstChild},r=function(e,n){var t=e.children;return 1===t.length&&t[0].tagName===n},i=function(e){return null!=(e=e||document.querySelector(".mai-popup"))&&!0===e.ownerDocument.body.contains(e)};t.visible=i;t.create=function(e,n){var t=function(e,n){var t=o('\n\t\t<div class="mai-popup '.concat(n.className,'">\n\t\t\t<div class="mai-popup__placeholder" role="dialog"></div>\n\t\t</div>\n\t')),i=t.querySelector(".mai-popup__placeholder");e.forEach((function(e){return i.appendChild(e)}));var c=r(i,"IMG"),u=r(i,"VIDEO"),s=r(i,"IFRAME");return!0===c&&t.classList.add("mai-popup--img"),!0===u&&t.classList.add("mai-popup--video"),!0===s&&t.classList.add("mai-popup--iframe"),t}(e=function(e){var n="string"==typeof e,t=e instanceof HTMLElement==1;if(!1===n&&!1===t)throw new Error("Content must be a DOM element/node or string");return!0===n?Array.from(o(e,!0)):"TEMPLATE"===e.tagName?[e.content.cloneNode(!0)]:Array.from(e.children)}(e),n=function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};if(null==(e=Object.assign({},e)).closable&&(e.closable=!0),null==e.className&&(e.className=""),null==e.onShow&&(e.onShow=function(){}),null==e.onClose&&(e.onClose=function(){}),"boolean"!=typeof e.closable)throw new Error("Property `closable` must be a boolean");if("string"!=typeof e.className)throw new Error("Property `className` must be a string");if("function"!=typeof e.onShow)throw new Error("Property `onShow` must be a function");if("function"!=typeof e.onClose)throw new Error("Property `onClose` must be a function");return e}(n)),c=function(e){return!1!==n.onClose(u)&&function(e,n){return e.classList.remove("mai-popup--visible"),setTimeout((function(){return!1===i(e)||e.parentElement.removeChild(e),n()}),410),!0}(t,(function(){if("function"==typeof e)return e(u)}))};!0===n.closable&&t.addEventListener("click",(function(e){e.target===t&&c()}));var u={element:function(){return t},visible:function(){return i(t)},show:function(e){return!1!==n.onShow(u)&&function(e,n){return document.body.appendChild(e),setTimeout((function(){requestAnimationFrame((function(){return e.classList.add("mai-popup--visible"),n()}))}),10),!0}(t,(function(){if("function"==typeof e)return e(u)}))},close:c};return u}},{}]},{},[1])(1)}));
-
 ( function() {
 	/**
 	 * Wait until page is loaded.
 	 */
 	window.addEventListener( 'load', function( event ) {
-		const timed    = document.querySelectorAll( '.mai-popup-time' );
-		const scrolls  = document.querySelectorAll( '.mai-popup-scroll' );
-		const loads    = document.querySelectorAll( '.mai-popup-load' );
+		const timed    = document.querySelectorAll( '.mai-popup[data-type="time"]' );
+		const scrolls  = document.querySelectorAll( '.mai-popup[data-type="scroll"]' );
+		const loads    = document.querySelectorAll( '.mai-popup[data-type="load"]' );
 		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 
 		// Bail if no popups.
@@ -23,16 +15,17 @@
 
 		let open = [];
 
-		const doPopUp = function( popup, event = false ) {
+		const openPopup = function( popup, event = false ) {
 			if ( 'string' === typeof popup ) {
 				popup = document.querySelector( popup );
 			}
 
-			// Bail if popup is empty.
-			if ( ! ( popup && popup.innerHTML ) ) {
+			// Bail if no popup.
+			if ( ! popup ) {
 				return;
 			}
 
+<<<<<<< HEAD
 			const current    = document.activeElement;
 			const style      = popup.getAttribute( 'style' );
 			const animate    = popup.getAttribute( 'data-animate' );
@@ -97,29 +90,102 @@
 					}
 				}
 			);
+=======
+			// Set as open.
+			open.push( popup );
+>>>>>>> dialog
 
-			// Show and set focus.
-			instance.show(() => {
-				var element = instance.element();
-				var toFocus = element.querySelector( '.mai-popup__content' );
+			// Check if centered modal.
+			const modal = 'center' === popup.getAttribute( 'data-vertical' ) && 'center' === popup.getAttribute( 'data-horizontal' );
 
-				if ( toFocus ) {
-					toFocus.setAttribute( 'tabindex', 0 );
-					toFocus.focus();
-				}
+			// Maybe add overlay.
+			if ( modal ) {
+				var overlay = document.createElement( 'div' );
+				overlay.setAttribute( 'class', 'mai-popup-overlay' );
+				popup.before( overlay );
+			}
+
+			// Show popup.
+			popup.show();
+
+			// Close when hitting close icon.
+			popup.querySelectorAll( '.mai-popup__close', '.mai-popup-close' ).forEach( ( close ) => {
+				close.addEventListener( 'click', ( event ) => {
+					closePopup( popup );
+				});
 			});
+
+			// Adds event listener for close event.
+			popup.addEventListener( 'close', ( event ) => {
+				closePopup( popup );
+			}, { once: true } );
+
+			// Adds event listener to close modal when clicking outside.
+			if ( modal ) {
+				overlay.addEventListener( 'click', ( event ) => {
+					closePopup( popup );
+				}, { once: true } );
+			}
+		}
+
+		const closePopup = function( popup ) {
+			/**
+			 * Prevent infinite loops.
+			 * This function is called via clicks when it's modal().
+			 */
+			if ( ! popup.open ) {
+				return;
+			}
+
+			// Remove from open popups.
+			open = open.splice( open.indexOf( popup ), 1 );
+
+			// Get data.
+			const seconds  = popup.getAttribute( 'data-expire' );
+			const previous = popup.previousElementSibling;
+			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
+
+			// If expiring.
+			if ( seconds ) {
+				// Build cookie.
+				const expire = new Date();
+				expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
+				const name   = popup.getAttribute( 'id' );
+				const utc    = expire.toUTCString();
+				const cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
+
+				// Set cookie.
+				document.cookie = cookie;
+			}
+
+			// Add hidden class, for CSS animation.
+			popup.setAttribute( 'closing', '' );
+
+			if ( overlay ) {
+				overlay.setAttribute( 'closing', '' );
+			}
+
+			// Close popup after animation is done.
+			popup.addEventListener( 'animationend', () => {
+				popup.removeAttribute( 'closing' );
+				popup.close();
+
+				// Remove overlay.
+				if ( overlay ) {
+					overlay.remove();
+				}
+			}, { once: true } );
 		}
 
 		// Close last open popup with escape key.
-		document.addEventListener( 'keyup', function( event ) {
+		document.addEventListener( 'keyup', ( event ) => {
 			// Bail if none open.
 			if ( ! open.length ) {
 				return;
 			}
 
 			if ( event.key === "Escape" || event.key === "Esc" ) {
-				var last = open.pop();
-				last.close();
+				closePopup( open.pop() );
 			}
 		});
 
@@ -127,9 +193,9 @@
 		 * Sets up timed popups. *
 		 *************************/
 		if ( timed.length ) {
-			timed.forEach( function( popup ) {
-				setTimeout( function() {
-					doPopUp( popup );
+			timed.forEach( ( popup ) => {
+				setTimeout( () => {
+					openPopup( popup );
 				}, parseInt( popup.getAttribute( 'data-delay' ) ) );
 			});
 		}
@@ -138,8 +204,8 @@
 		 * Sets up on load popups. *
 		 *************************/
 		 if ( loads.length ) {
-			loads.forEach( function( popup ) {
-				doPopUp( popup );
+			loads.forEach( ( popup ) => {
+				openPopup( popup );
 			});
 		}
 
@@ -147,10 +213,10 @@
 		 * Sets up triggered popups. *
 		 *****************************/
 		 if ( triggers.length ) {
-			triggers.forEach( function( trigger ) {
-				trigger.addEventListener( 'click', function( event ) {
+			triggers.forEach( ( trigger ) => {
+				trigger.addEventListener( 'click', ( event ) => {
 					event.preventDefault();
-					doPopUp( event.target.getAttribute( 'href' ) );
+					openPopup( event.target.getAttribute( 'href' ) );
 				}, false );
 			});
 		}
@@ -165,7 +231,7 @@
 			 * @link https://vanillajstoolkit.com/helpers/debounce/
 			 * @param {Function} fn The function to debounce.
 			 */
-			const debounce = function( fn ) {
+			const debounce = ( fn ) => {
 				// Setup a timer.
 				let timeout;
 
@@ -181,7 +247,7 @@
 					}
 
 					// Setup the new requestAnimationFrame().
-					timeout = window.requestAnimationFrame( function () {
+					timeout = window.requestAnimationFrame( () => {
 						fn.apply(context, args);
 					});
 				};
@@ -194,7 +260,7 @@
 			 *
 			 * @returns int
 			 */
-			const getScrollPercentage = function( element ) {
+			const getScrollPercentage = ( element ) => {
 				if ( ! element ) {
 					return;
 				}
@@ -215,11 +281,11 @@
 			var scrollData = [];
 
 			// Add the data.
-			scrolls.forEach( function( popup ) {
+			scrolls.forEach( ( popup ) => {
 				scrollData.push(
 					{
-						element: popup,
 						distance: parseInt( popup.getAttribute( 'data-distance' ) ),
+						element: popup,
 					}
 				);
 			});
@@ -227,7 +293,7 @@
 			/**
 			 * Adds scroll listener to trigger based on scroll percentage.
 			 */
-			window.addEventListener( 'scroll', debounce(() => {
+			window.addEventListener( 'scroll', debounce( () => {
 				// Bail if scroll popups are empty.
 				if ( ! scrollData.length ) {
 					return false;
@@ -236,8 +302,8 @@
 				// Get scroll element.
 				var scrolled = getScrollPercentage( tracker );
 
-				//
-				scrollData.forEach((data, index) => {
+				// Check scroll distance of each popup.
+				scrollData.forEach( (data, index) => {
 					if ( scrolled < data.distance ) {
 						return;
 					}
@@ -246,7 +312,7 @@
 					scrollData.splice(index, 1);
 
 					// Launch popup.
-					doPopUp( data.element );
+					openPopup( data.element );
 				});
 			}));
 		}
