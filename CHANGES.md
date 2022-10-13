@@ -1,7 +1,10 @@
 # Changelog
 
+## 0.3.2
+Fixed: Popup taller than screen on mobile in some instances.
+
 ## 0.3.1
-Fixed: Popup larger than screen on mobile in some instances.
+Fixed: Popup wider than screen on mobile in some instances.
 
 ## 0.3.0
 Changed: Converted to `<dialog>` element for native functionality and better accessibility.
