@@ -1,20 +1,20 @@
 # Changelog
 
 ## 0.3.3
-Fixed: Triggered popups not launching if link has nested HTML.
-Fixed: Double slash in asset urls.
+* Fixed: Triggered popups not launching if link has nested HTML.
+* Fixed: Double slash in asset urls.
 
 ## 0.3.2
-Fixed: Popup taller than screen on mobile in some instances.
+* Fixed: Popup taller than screen on mobile in some instances.
 
 ## 0.3.1
-Fixed: Popup wider than screen on mobile in some instances.
+* Fixed: Popup wider than screen on mobile in some instances.
 
 ## 0.3.0
-Changed: Converted to `<dialog>` element for native functionality and better accessibility.
+* Changed: Converted to `<dialog>` element for native functionality and better accessibility.
 
 ## 0.2.3
-Added: Allow any popup to be closed with mai-popup-close class on any element inside the popup.
+* Added: Allow any popup to be closed with mai-popup-close class on any element inside the popup.
 
 ## 0.2.2
 Initial beta release, ready for testing.
