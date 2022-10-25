@@ -202,8 +202,8 @@ class Mai_Popup {
 	function enqueue() {
 		$suffix  = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/css/mai-popups{$suffix}.css", [], MAI_POPUPS_VERSION );
-		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "/assets/js/mai-popups{$suffix}.js", [], MAI_POPUPS_VERSION, true );
+		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "assets/css/mai-popups{$suffix}.css", [], MAI_POPUPS_VERSION );
+		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "assets/js/mai-popups{$suffix}.js", [], MAI_POPUPS_VERSION, true );
 	}
 }
 // End ! class_exists check.
