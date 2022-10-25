@@ -29,7 +29,7 @@
 			open.push( popup );
 
 			// Check if centered modal.
-			const modal = 'center' === popup.getAttribute( 'data-vertical' ) && 'center' === popup.getAttribute( 'data-horizontal' );
+			const modal = 'center' === popup.dataset.vertical && 'center' === popup.dataset.horizontal;
 
 			// Maybe add overlay.
 			if ( modal ) {
@@ -74,7 +74,7 @@
 			open = open.splice( open.indexOf( popup ), 1 );
 
 			// Get data.
-			const seconds  = popup.getAttribute( 'data-expire' );
+			const seconds  = popup.dataset.expire;
 			const previous = popup.previousElementSibling;
 			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
 
@@ -83,7 +83,7 @@
 				// Build cookie.
 				const expire = new Date();
 				expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
-				const name   = popup.getAttribute( 'id' );
+				const name   = popup.id;
 				const utc    = expire.toUTCString();
 				const cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
 
@@ -129,7 +129,7 @@
 			timed.forEach( ( popup ) => {
 				setTimeout( () => {
 					openPopup( popup );
-				}, parseInt( popup.getAttribute( 'data-delay' ) ) );
+				}, parseInt( popup.dataset.delay ) );
 			});
 		}
 
@@ -149,7 +149,7 @@
 			triggers.forEach( ( trigger ) => {
 				trigger.addEventListener( 'click', ( event ) => {
 					event.preventDefault();
-					openPopup( event.target.getAttribute( 'href' ) );
+					openPopup( event.currentTarget.getAttribute( 'href' ) );
 				}, false );
 			});
 		}
@@ -217,7 +217,7 @@
 			scrolls.forEach( ( popup ) => {
 				scrollData.push(
 					{
-						distance: parseInt( popup.getAttribute( 'data-distance' ) ),
+						distance: parseInt( popup.dataset.distance ),
 						element: popup,
 					}
 				);
