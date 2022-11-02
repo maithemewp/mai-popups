@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.4
+* Fixed: Allow custom classes on popups.
+
 ## 0.3.3
 * Fixed: Triggered popups not launching if link has nested HTML.
 * Fixed: Double slash in asset urls.
