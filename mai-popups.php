@@ -201,9 +201,9 @@ final class Mai_Popups_Plugin {
  *
  * @return object|Mai_Popups_Plugin The one true Mai_Popups_Plugin Instance.
  */
-function Mai_Popups_Plugin() {
+function mai_popups_plugin() {
 	return Mai_Popups_Plugin::instance();
 }
 
 // Get Mai_Popups_Plugin Running.
-Mai_Popups_Plugin();
+mai_popups_plugin();

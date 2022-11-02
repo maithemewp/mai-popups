@@ -29,6 +29,7 @@ function maipopups_get_defaults() {
 	$defaults = apply_filters( 'mai_popup_default_args',
 		[
 			'id'        => '', // The HTML id when trigger is manual. Must start with `mai-popup-`.
+			'class'     => '', // Additional HTML classes.
 			'trigger'   => 'manual', // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
 			'animate'   => 'fade', // The type of animation. Accepts 'fade', 'up', and 'down'.
 			'distance'  => '50', // The percentage distance of scroll before triggering popup when the trigger is 'scroll'.

@@ -25,6 +25,7 @@ class Mai_Popup {
 
 		// Sanitize args.
 		$args['id']        = sanitize_key( $args['id'] );
+		$args['class']     = esc_attr( $args['class'] );
 		$args['trigger']   = sanitize_key( $args['trigger'] );
 		$args['animate']   = sanitize_key( $args['animate'] );
 		$args['distance']  = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
@@ -104,10 +105,10 @@ class Mai_Popup {
 			'data-animate' => $this->args['animate'],
 		];
 
-		// Adds editor class.
-		// if ( $this->args['preview'] ) {
-		// 	$args['class'] .= ' mai-popup';
-		// }
+		// Adds custom classes.
+		if ( $this->args['class'] ) {
+			$args['class'] .= ' ' . $this->args['class'];
+		}
 
 		// Adds width attributes.
 		if ( $width ) {
@@ -167,7 +168,7 @@ class Mai_Popup {
 				continue;
 			}
 
-			$atts .= sprintf( ' %s="%s"', $att, $value );
+			$atts .= sprintf( ' %s="%s"', $att, trim( $value ) );
 		}
 
 		// Build HTML.
