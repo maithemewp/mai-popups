@@ -6,9 +6,15 @@ A lightweight and flexible popup, slideup, notice, and hello bar block. Works be
 Add Mai Popup block to any post/page and configure the settings. Create your popup content using any blocks.
 
 ### Helper function
-Developers can add any shortcode via `mai_do_popup( $args, $content )` function. Add this function anywhere and it will automatically add the popup to the footer.
+Developers can add any popup via `mai_do_popup( $args, $content )` function. Add this function anywhere and it will automatically add the popup to the footer.
 
-`$args`
+```
+mai_do_popup( $args, $content );
+```
+
+```
+$args
+```
 ```
 [
 	'id'        => '', // The HTML id when trigger is manual. Must start with `mai-popup-`.
@@ -23,5 +29,7 @@ Developers can add any shortcode via `mai_do_popup( $args, $content )` function.
 ]
 ```
 
-`$content`
+```
+$content
+```
 Any HTML string.
