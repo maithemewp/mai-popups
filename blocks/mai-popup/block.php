@@ -136,6 +136,7 @@ function mai_register_popup_field_group() {
 					'instructions' => __( 'Accepts any CSS value (px, em, rem, vw, ch, etc.). Using 100% removes margin around content.', 'mai-popups' ),
 					'name'         => 'width',
 					'type'         => 'text',
+					'placeholder'  => '600px',
 				],
 				[
 					'key'               => 'mai_popup_repeat',
