@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'c90223f33349b2948b2cdb576fed5d3df498f35f',
+        'reference' => 'b764af22ab4968254d1ce61edafd75aa085b76ca',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'c90223f33349b2948b2cdb576fed5d3df498f35f',
+            'reference' => 'b764af22ab4968254d1ce61edafd75aa085b76ca',
             'dev_requirement' => false,
         ),
         'yahnis-elsts/plugin-update-checker' => array(
