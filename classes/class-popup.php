@@ -38,7 +38,7 @@ class Mai_Popup {
 
 		// Set props.
 		$this->args    = $args;
-		$this->content = $content; // Sanitizing strips block attributes.
+		$this->content = $this->args['preview'] ? $this->get_inner_blocks() : $content; // Sanitizing strips block attributes.
 	}
 
 	/**
@@ -50,7 +50,7 @@ class Mai_Popup {
 	 * @return void
 	 */
 	function render() {
-		if ( $this->is_footer() ) {
+		if ( $this->args['preview'] || $this->is_footer() ) {
 			// Display where we are and hope for the best.
 			echo $this->get();
 		} else {
@@ -171,15 +171,32 @@ class Mai_Popup {
 			$atts .= sprintf( ' %s="%s"', $att, trim( $value ) );
 		}
 
+		$tag = $this->args['preview'] ? 'div' : 'dialog';
+
 		// Build HTML.
-		$html .= sprintf( '<dialog%s>', $atts );
+		$html .= sprintf( '<%s%s>', $tag, $atts );
 			$html .= $this->content;
 			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
-		$html .= '</dialog>';
+		$html .= sprintf( '</%s>', $tag );
 
 		$first = false;
 
 		return $html;
+	}
+
+	/**
+	 * Gets inner blocks element.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	function get_inner_blocks() {
+		$template = [
+			[ 'core/paragraph', [], [] ],
+		];
+
+		return sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
 	}
 
 	/**
