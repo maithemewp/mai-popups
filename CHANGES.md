@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.5
+* Fixed: Editor placeholder element when adding new block.
+
 ## 0.3.4
 * Fixed: Allow custom classes on popups.
 
