@@ -83,7 +83,7 @@
 				// Build cookie.
 				const expire = new Date();
 				expire.setTime( parseInt( expire ) );
-				const cookie = popup.id + '=1; expires=' + expire.toUTCString() + '; path=/; SameSite=Strict;';
+				const cookie = popup.id + '=1; expires=' + expire.toUTCString() + '; path=/; SameSite=Lax;';
 
 				// Set cookie.
 				document.cookie = cookie;
