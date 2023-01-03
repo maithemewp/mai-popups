@@ -45,6 +45,10 @@ function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_b
 	$args['width']    = get_field( 'width' );
 	$args['repeat']   = get_field( 'repeat' );
 	$args['preview']  = $is_preview;
+	$template         = [ [ 'core/paragraph', [], [] ] ];
+	$inner            = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
+	$content          = $is_preview ? $inner : $content;
+	$content          = do_shortcode( $content );
 
 	$popup = new Mai_Popup( $args, $content );
 	$popup->render();
