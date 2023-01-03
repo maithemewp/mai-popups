@@ -34,21 +34,22 @@ function mai_register_popup_block() {
  * @return void
  */
 function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_block, $context ) {
-	$args             = [];
-	$args['class']    = isset( $attributes['className'] ) ? $attributes['className']: '';
-	$args['position'] = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
-	$args['id']       = get_field( 'id' );
-	$args['trigger']  = get_field( 'trigger' );
-	$args['animate']  = get_field( 'animate' );
-	$args['text']     = get_field( 'text' );
-	$args['delay']    = get_field( 'delay' );
-	$args['width']    = get_field( 'width' );
-	$args['repeat']   = get_field( 'repeat' );
-	$args['preview']  = $is_preview;
-	$template         = [ [ 'core/paragraph', [], [] ] ];
-	$inner            = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
-	$content          = $is_preview ? $inner : $content;
-	$content          = do_shortcode( $content );
+	      $args           = [];
+	$args['class']        = isset( $attributes['className'] ) ? $attributes['className']: '';
+	$args['position']     = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
+	$args['id']           = get_field( 'id' );
+	$args['trigger']      = get_field( 'trigger' );
+	$args['animate']      = get_field( 'animate' );
+	$args['text']         = get_field( 'text' );
+	$args['delay']        = get_field( 'delay' );
+	$args['width']        = get_field( 'width' );
+	$args['repeat']       = get_field( 'repeat' );
+	$args['repeat_roles'] = get_field( 'repeat_roles' );
+	$args['preview']      = $is_preview;
+	$template             = [ [ 'core/paragraph', [], [] ] ];
+	$inner                = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
+	$content              = $is_preview ? $inner : $content;
+	$content              = do_shortcode( $content );
 
 	$popup = new Mai_Popup( $args, $content );
 	$popup->render();
@@ -160,6 +161,27 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
+					'key'               => 'mai_popup_repeat_roles',
+					'label'             => __( 'Always repeat for user roles', 'mai-popups' ),
+					'name'              => 'repeat_roles',
+					'instructions'      => __( 'Select user roles that will always see this popup, regardless of the setting above.', 'mai-popups' ),
+					'type'              => 'select',
+					'choices'           => [], // Added later.
+					'return_format'     => 'value',
+					'multiple'          => 1,
+					'ui'                => 1,
+					'ajax'              => 1,
+					'conditional_logic' => [
+						[
+							[
+								'field'    => 'mai_popup_trigger',
+								'operator' => '!=',
+								'value'    => 'manual',
+							],
+						],
+					],
+				],
+				[
 					'key'          => 'mai_popup_link',
 					'label'        => __( 'Link', 'mai-popups' ),
 					'instructions' => __( 'Launch this popup by linking any text or button link to the anchor below. The popup must be on the page for the link to work.', 'mai-popups' ),
@@ -178,6 +200,28 @@ function mai_register_popup_field_group() {
 			],
 		]
 	);
+}
+
+add_filter( 'acf/load_field/key=mai_popup_repeat_roles', 'mai_load_popup_repeat_roles' );
+/**
+ *
+ * @since TBD
+ *
+ * @param array $field The existing field array.
+ *
+ * @return array
+ */
+function mai_load_popup_repeat_roles( $field ) {
+	$choices  = [];
+	$wp_roles = wp_roles();
+
+	foreach ( $wp_roles->roles as $key => $role ) {
+		$choices[ $key ] = $role['name'];
+	}
+
+	$field['choices'] = $choices;
+
+	return $field;
 }
 
 add_filter( 'acf/prepare_field/key=mai_popup_link', 'mai_prepare_popup_id_field' );

@@ -21,24 +21,24 @@ class Mai_Popup {
 	function __construct( $args = [], $content = '' ) {
 		// Get args.
 		$args = shortcode_atts( maipopups_get_defaults(), $args, $this->key );
-		$args = array_map( 'trim', $args );
 
 		// Sanitize args.
-		$args['id']        = sanitize_key( $args['id'] );
-		$args['class']     = esc_attr( $args['class'] );
-		$args['trigger']   = sanitize_key( $args['trigger'] );
-		$args['animate']   = sanitize_key( $args['animate'] );
-		$args['distance']  = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
-		$args['delay']     = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
-		$args['position']  = esc_html( $args['position'] );
-		$args['width']     = trim( esc_html( $args['width'] ) );
-		$args['repeat']    = trim( esc_html( $args['repeat'] ) );
-		$args['condition'] = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
-		$args['preview']   = rest_sanitize_boolean( $args['preview'] );
+		$args['id']           = sanitize_key( $args['id'] );
+		$args['class']        = esc_attr( $args['class'] );
+		$args['trigger']      = sanitize_key( $args['trigger'] );
+		$args['animate']      = sanitize_key( $args['animate'] );
+		$args['distance']     = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
+		$args['delay']        = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
+		$args['position']     = esc_html( $args['position'] );
+		$args['width']        = trim( esc_html( $args['width'] ) );
+		$args['repeat']       = trim( esc_html( $args['repeat'] ) );
+		$args['repeat_roles'] = array_map( 'sanitize_key', (array) $args['repeat_roles'] );
+		$args['condition']    = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
+		$args['preview']      = rest_sanitize_boolean( $args['preview'] );
 
 		// Set props.
 		$this->args    = $args;
-		$this->content = $this->args['preview'] ? $this->get_inner_blocks() : $content; // Sanitizing strips block attributes.
+		$this->content = $content;
 	}
 
 	/**
@@ -147,9 +147,21 @@ class Mai_Popup {
 		}
 
 		// If a cookied popup.
-		if ( ! current_user_can( 'edit_posts' ) && in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) ) {
+		if ( in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && $this->args['repeat'] ) {
+			$use_cookie = true;
+
+			// Check if user is in role.
+			if ( $this->args['repeat_roles'] && is_user_logged_in() ) {
+				foreach ( $this->args['repeat_roles'] as $role ) {
+					if ( current_user_can( $role ) ) {
+						$use_cookie = false;
+						break;
+					}
+				}
+			}
+
 			// Bail if already viewed.
-			if ( isset( $_COOKIE[ $id ] ) ) {
+			if ( $use_cookie && isset( $_COOKIE[ $id ] ) ) {
 				return $html;
 			}
 
