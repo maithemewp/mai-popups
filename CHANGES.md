@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+* Added: New setting to always repeat popup for roles, regardless of repeat/cookie setting.
+* Changed: Cookie from SameSite 'Strict' to 'Lax'.
+* Fixed: Shortcodes not parsing in block content.
+* Fixed: Deprecated required parameter after not required param in function.
+
 ## 0.3.5
 * Fixed: Editor placeholder element when adding new block.
 
