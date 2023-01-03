@@ -31,8 +31,8 @@ class Mai_Popup {
 		$args['distance']  = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
 		$args['delay']     = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
 		$args['position']  = esc_html( $args['position'] );
-		$args['width']     = esc_html( $args['width'] );
-		$args['repeat']    = esc_html( $args['repeat'] );
+		$args['width']     = trim( esc_html( $args['width'] ) );
+		$args['repeat']    = trim( esc_html( $args['repeat'] ) );
 		$args['condition'] = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
 		$args['preview']   = rest_sanitize_boolean( $args['preview'] );
 
@@ -153,13 +153,8 @@ class Mai_Popup {
 				return $html;
 			}
 
-			// Get expiration.
-			$now    = strtotime( 'now' );
-			$future = strtotime( '+ ' . $this->args['repeat'] );
-			$expire = $future - $now;
-
 			// Set expiration.
-			$args['data-expire'] = $expire;
+			$args['data-expire'] = strtotime( '+' . $this->args['repeat'] );
 		}
 
 		// Build args.
