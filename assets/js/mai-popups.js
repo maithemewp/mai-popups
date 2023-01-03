@@ -82,10 +82,8 @@
 			if ( seconds ) {
 				// Build cookie.
 				const expire = new Date();
-				expire.setSeconds( expire.getSeconds() + parseInt(seconds) );
-				const name   = popup.id;
-				const utc    = expire.toUTCString();
-				const cookie = name + '=1;expires=' + utc + ';path=/;SameSite=Strict;';
+				expire.setTime( parseInt( expire ) );
+				const cookie = popup.id + '=1; expires=' + expire.toUTCString() + '; path=/; SameSite=Strict;';
 
 				// Set cookie.
 				document.cookie = cookie;
