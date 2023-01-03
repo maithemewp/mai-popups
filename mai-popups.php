@@ -138,7 +138,7 @@ final class Mai_Popups_Plugin {
 	 * @return  void
 	 */
 	public function hooks() {
-		add_action( 'admin_init', [ $this, 'updater' ] );
+		add_action( 'plugins_loaded', [ $this, 'updater' ] );
 	}
 
 	/**
