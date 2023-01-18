@@ -205,7 +205,7 @@ function mai_register_popup_field_group() {
 add_filter( 'acf/load_field/key=mai_popup_repeat_roles', 'mai_load_popup_repeat_roles' );
 /**
  *
- * @since TBD
+ * @since 0.4.0
  *
  * @param array $field The existing field array.
  *

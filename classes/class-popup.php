@@ -84,6 +84,15 @@ class Mai_Popup {
 			}
 		}
 
+		// Set vars.
+		$id     = ltrim( $this->args['id'], '#' );
+		$cookie = $this->use_cookie();
+
+		// Bail if already cookied. Caching may get passed this.
+		if ( $cookie && $_COOKIE && isset( $_COOKIE[ $id ] ) ) {
+			return;
+		}
+
 		// If first, enqueue scripts and styles.
 		if ( $first ) {
 			if ( $this->is_footer() ) {
@@ -94,7 +103,6 @@ class Mai_Popup {
 		}
 
 		$html  = '';
-		$id    = ltrim( $this->args['id'], '#' );
 		$width = sprintf( '%s%s', $this->args['width'], is_numeric( $this->args['width'] ) ? 'px' : '' );
 		$atts  = '';
 		$args  = [
@@ -146,25 +154,8 @@ class Mai_Popup {
 			break;
 		}
 
-		// If a cookied popup.
-		if ( in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && $this->args['repeat'] ) {
-			$use_cookie = true;
-
-			// Check if user is in role.
-			if ( $this->args['repeat_roles'] && is_user_logged_in() ) {
-				foreach ( $this->args['repeat_roles'] as $role ) {
-					if ( current_user_can( $role ) ) {
-						$use_cookie = false;
-						break;
-					}
-				}
-			}
-
-			// Bail if already viewed.
-			if ( $use_cookie && isset( $_COOKIE[ $id ] ) ) {
-				return $html;
-			}
-
+		// If a cookie popup.
+		if ( $cookie ) {
 			// Add cookie attribute, for JS cookie check since caching sometimes gets through PHP.
 			$args['data-cookie'] = 'true';
 
@@ -195,9 +186,35 @@ class Mai_Popup {
 	}
 
 	/**
+	 * Checks if popup uses cookie functionality.
+	 *
+	 * @since 0.4.1
+	 *
+	 * @return boolean
+	 */
+	function use_cookie() {
+		$use_cookie = in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && $this->args['repeat'];
+
+		// If settings enable cookies.
+		if ( $use_cookie ) {
+			// Check if user is in role.
+			if ( $this->args['repeat_roles'] && is_user_logged_in() ) {
+				foreach ( $this->args['repeat_roles'] as $role ) {
+					if ( current_user_can( $role ) ) {
+						$use_cookie = false;
+						break;
+					}
+				}
+			}
+		}
+
+		return $use_cookie;
+	}
+
+	/**
 	 * Gets inner blocks element.
 	 *
-	 * @since TBD
+	 * @since 0.4.0
 	 *
 	 * @return string
 	 */
