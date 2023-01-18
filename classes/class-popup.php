@@ -1,5 +1,8 @@
 <?php
 
+// Prevent direct file access.
+defined( 'ABSPATH' ) || die;
+
 // Check for existing class.
 if ( ! class_exists( 'Mai_Popup' ) ):
 /**
@@ -209,21 +212,6 @@ class Mai_Popup {
 		}
 
 		return $use_cookie;
-	}
-
-	/**
-	 * Gets inner blocks element.
-	 *
-	 * @since 0.4.0
-	 *
-	 * @return string
-	 */
-	function get_inner_blocks() {
-		$template = [
-			[ 'core/paragraph', [], [] ],
-		];
-
-		return sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
 	}
 
 	/**
