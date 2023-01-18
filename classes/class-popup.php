@@ -165,6 +165,9 @@ class Mai_Popup {
 				return $html;
 			}
 
+			// Add cookie attribute, for JS cookie check since caching sometimes gets through PHP.
+			$args['data-cookie'] = 'true';
+
 			// Set expiration.
 			$args['data-expire'] = strtotime( '+' . $this->args['repeat'] );
 		}

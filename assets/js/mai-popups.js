@@ -25,6 +25,16 @@
 				return;
 			}
 
+			// Check cookie.
+			if ( 'true' === popup.dataset.cookie ) {
+				var cookie  = popup.getAttribute( 'id' ) + '=1';
+				var cookies = document.cookie.split( '; ' );
+
+				if ( cookie && cookies && cookies.includes( cookie ) ) {
+					return;
+				}
+			}
+
 			// Set as open.
 			open.push( popup );
 
@@ -86,7 +96,7 @@
 				const cookie = popup.id + '=1; expires=' + expire.toUTCString() + '; path=/; SameSite=Lax;';
 
 				// Set cookie.
-				document.cookie = cookie;
+				document.cookie = cookie.trim();
 			}
 
 			// Add hidden class, for CSS animation.
