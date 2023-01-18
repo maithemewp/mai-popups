@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+* Fixed: Caching was allowing popups to repeat even though they were already viewed/closed.
+
 ## 0.4.0
 * Added: New setting to always repeat popup for roles, regardless of repeat/cookie setting.
 * Changed: Cookie from SameSite 'Strict' to 'Lax'.
