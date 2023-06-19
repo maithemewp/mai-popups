@@ -1,17 +1,22 @@
 {
-  "name": "acf/mai-popup",
-  "title": "Mai Popup",
-  "description": "A lightweight and flexible popup, slideup, notice, and hello bar block.",
-  "category": "widgets",
-  "keywords": [ "popup", "cta", "slide" ],
-  "textdomain": "mai-popups",
-  "editorStyle": "file:./editor.css",
-  "acf": {
-    "mode": "preview",
-    "renderCallback": "mai_do_popup_block"
-  },
-  "supports": {
-    "align": false,
-    "align_content": "matrix"
-  }
+	"name": "acf/mai-popup",
+	"title": "Mai Popup",
+	"description": "A lightweight and flexible popup, slideup, notice, and hello bar block.",
+	"category": "widgets",
+	"keywords": [ "popup", "cta", "slide" ],
+	"textdomain": "mai-popups",
+	"editorStyle": "file:./editor.css",
+	"acf": {
+		"mode": "preview",
+		"renderCallback": "mai_do_popup_block"
+	},
+	"supports": {
+		"align": false,
+		"align_content": "matrix",
+		"color": {
+			"text": true,
+			"background": true,
+			"link": false
+		}
+	}
 }

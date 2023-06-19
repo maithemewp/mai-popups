@@ -34,8 +34,11 @@ class Mai_Popup {
 		$args['delay']        = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
 		$args['position']     = esc_html( $args['position'] );
 		$args['width']        = trim( esc_html( $args['width'] ) );
+		$args['padding']      = sanitize_key( $args['padding'] );
 		$args['repeat']       = trim( esc_html( $args['repeat'] ) );
 		$args['repeat_roles'] = array_map( 'sanitize_key', (array) $args['repeat_roles'] );
+		$args['background']   = sanitize_key( $args['background'] );
+		$args['color']        = sanitize_key( $args['color'] );
 		$args['condition']    = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
 		$args['preview']      = rest_sanitize_boolean( $args['preview'] );
 
@@ -53,6 +56,15 @@ class Mai_Popup {
 	 * @return void
 	 */
 	function render() {
+		static $loaded = [];
+
+		// Bail if this popup was already loaded.
+		// Not sure why, but we were getting duplicate popup markup in the footer.
+		// Possibly because the intial parse and the content parse were both hooking into the footer.
+		if ( isset( $loaded[ $this->args['id'] ] ) ) {
+			return;
+		}
+
 		if ( $this->args['preview'] || $this->is_footer() ) {
 			// Display where we are and hope for the best.
 			echo $this->get();
@@ -62,6 +74,8 @@ class Mai_Popup {
 				echo $this->get();
 			});
 		}
+
+		$loaded[ $this->args['id'] ] = true;
 	}
 
 	/**
@@ -121,6 +135,23 @@ class Mai_Popup {
 			$args['class'] .= ' ' . $this->args['class'];
 		}
 
+		// Add padding class.
+		if ( $this->args['padding'] ) {
+			$args['class'] .= sprintf( ' has-%s-padding', $this->args['padding'] );
+		}
+
+		// Add background color.
+		if ( $this->args['background'] ) {
+			$args['class'] .= sprintf( ' has-%s-background-color', $this->args['background'] );
+			$args['style'] .= sprintf( '--mai-popup-close-background:var(--color-%s);', $this->args['background'] );
+		}
+
+		// Add text color.
+		if ( $this->args['color'] ) {
+			$args['class'] .= sprintf( ' has-%s-color', $this->args['color'] );
+			$args['style'] .= sprintf( '--mai-popup-close-color:var(--color-%s);', $this->args['color'] );
+		}
+
 		// Adds width attributes.
 		if ( $width ) {
 			$args['style'] .= sprintf( '--mai-popup-max-width:%s;', $width );
@@ -175,17 +206,32 @@ class Mai_Popup {
 			$atts .= sprintf( ' %s="%s"', $att, trim( $value ) );
 		}
 
+		// Set tag.
 		$tag = $this->args['preview'] ? 'div' : 'dialog';
 
 		// Build HTML.
 		$html .= sprintf( '<%s%s>', $tag, $atts );
 			$html .= $this->content;
-			$html .= sprintf( '<button class="mai-popup__close" aria-label="%s"></button>', __( 'Close', 'mai-popups' ) );
+			$html .= $this->get_close_button();
 		$html .= sprintf( '</%s>', $tag );
 
 		$first = false;
 
 		return $html;
+	}
+
+	/**
+	 * Gets close button markup.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	function get_close_button() {
+		$text  = __( 'Close', 'mai-popups' );
+		$class = 'mai-popup__close';
+
+		return sprintf( '<button class="%s" aria-label="%s"></button>', $class, $text );
 	}
 
 	/**
@@ -196,7 +242,7 @@ class Mai_Popup {
 	 * @return boolean
 	 */
 	function use_cookie() {
-		$use_cookie = in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && $this->args['repeat'];
+		$use_cookie = ! $this->args['preview'] && in_array( $this->args['trigger'], [ 'time', 'scroll' ] ) && $this->args['repeat'];
 
 		// If settings enable cookies.
 		if ( $use_cookie ) {

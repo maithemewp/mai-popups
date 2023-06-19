@@ -80,8 +80,8 @@
 	height: var(--mai-popup-close-size, 44px);
 	margin: 0;
 	padding: var(--mai-popup-close-padding, 10px);
-	color: var(--mai-popup-close-color, var(--color-heading, currentColor));
-	background: var(--mai-popup-close-background, rgba(255, 255, 255, 0.5));
+	color: var(--mai-popup-close-color, currentColor);
+	background: var(--mai-popup-close-background, transparent);
 	border: 0;
 	border-radius: 50%;
 }

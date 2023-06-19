@@ -36,8 +36,11 @@ function maipopups_get_defaults() {
 			'delay'        => '3',               // The time in seconds before displaying the popup when using 'timed' type. Uses float so it can be decimals.
 			'position'     => 'center center',   // The position of popup, with space-separated values. First value is vertical, second value is horizontal. Accepts 'start', 'center', and 'end'.
 			'width'        => '',                // The max-width of the popup. Accepts any CSS value.
+			'padding'      => 'xl',              // The default padding of the popup.
 			'repeat'       => '7 days',          // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
 			'repeat_roles' => [],                // Roles that should ignore the repeat setting, for testing.
+			'background'   => '',                // Default background color.
+			'color'        => '',                // Default text color.
 			'condition'    => true,              // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
 			'preview'      => false,             // If viewing in editor or not.
 		]

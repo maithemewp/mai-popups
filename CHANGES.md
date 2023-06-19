@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+* Added: Background and text color settings.
+* Added: Padding setting to control spacing around content without relying on a nested Group block.
+* Changed: Updated the updater.
+* Changed: Popup defaults are now used to populate block setting defaults.
+* Fixed: Popup markup was occasionally being duplicated in the page source in some configurations.
+
 ## 0.4.1
 * Fixed: Caching was allowing popups to repeat even though they were already viewed/closed.
 
