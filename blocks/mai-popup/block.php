@@ -233,7 +233,7 @@ add_filter( 'acf/pre_render_field', 'mai_pre_render_popup_padding_field', 10, 2 
  * Unsets default value if this is an instance of the block
  * added before the padding field was available.
  *
- * @since TBD
+ * @since 0.5.0
  *
  * @param array $field
  * @param mixed $post_id

@@ -223,7 +223,7 @@ class Mai_Popup {
 	/**
 	 * Gets close button markup.
 	 *
-	 * @since TBD
+	 * @since 0.5.0
 	 *
 	 * @return string
 	 */
