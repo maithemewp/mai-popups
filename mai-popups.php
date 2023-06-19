@@ -13,6 +13,9 @@
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Must be at the top of the file.
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
 /**
  * Main Mai_Popups_Plugin Class.
  *
@@ -138,7 +141,7 @@ final class Mai_Popups_Plugin {
 	 * @return  void
 	 */
 	public function hooks() {
-		add_action( 'plugins_loaded', [ $this, 'updater' ] );
+		add_action( 'plugins_loaded', [ $this, 'updater' ], 12 );
 	}
 
 	/**
@@ -153,18 +156,13 @@ final class Mai_Popups_Plugin {
 	 * @return void
 	 */
 	public function updater() {
-		// Bail if current user cannot manage plugins.
-		if ( ! current_user_can( 'install_plugins' ) ) {
-			return;
-		}
-
 		// Bail if plugin updater is not loaded.
-		if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+		if ( ! class_exists( 'YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
 			return;
 		}
 
 		// Setup the updater.
-		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/maithemewp/mai-popups', __FILE__, 'mai-popups' );
+		$updater = PucFactory::buildUpdateChecker( 'https://github.com/maithemewp/mai-popups', __FILE__, 'mai-popups' );
 
 		// Set the stable branch.
 		$updater->setBranch( 'main' );
