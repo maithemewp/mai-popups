@@ -86,6 +86,10 @@
 	border-radius: 50%;
 }
 
+.mai-popup__close:hover {
+	transform: scale(1.2);
+}
+
 .mai-popup__close::before {
 	display: block;
 	width: 100%;
