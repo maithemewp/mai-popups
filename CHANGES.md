@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.1 (11/27/23)
+* Changed: Updated the updater.
+
 ## 0.5.0
 * Added: Background and text color settings.
 * Added: Padding setting to control spacing around content without relying on a nested Group block.
