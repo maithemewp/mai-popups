@@ -12,7 +12,7 @@ Developers can add any popup via `mai_do_popup( $args, $content )` function. Add
 mai_do_popup( $args, $content );
 ```
 
-**args**
+**$args**
 
 ```
 $args = [
