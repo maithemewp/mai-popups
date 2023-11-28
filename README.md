@@ -12,11 +12,10 @@ Developers can add any popup via `mai_do_popup( $args, $content )` function. Add
 mai_do_popup( $args, $content );
 ```
 
+**args**
+
 ```
-$args
-```
-```
-[
+$args = [
 	'id'        => '', // The HTML id when trigger is manual. Must start with `mai-popup-`.
 	'trigger'   => 'manual', // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
 	'animate'   => 'fade', // The type of animation. Accepts 'fade', 'up', and 'down'.
@@ -26,10 +25,9 @@ $args
 	'width'     => '', // The max-width of the popup. Accepts any CSS value.
 	'repeat'    => '7 days', // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
 	'condition' => true, // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
-]
+];
 ```
 
-```
-$content
-```
+**$content**
+
 Any HTML string.
