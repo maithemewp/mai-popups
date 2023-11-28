@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 (11/28/23)
+* Fixed: Compatibility with WP 6.4, changing has-link- to has-links- class name to avoid conflict.
+* Fixed: PHP warning if distance or delay is null.
+
 ## 0.5.1 (11/27/23)
 * Changed: Updated the updater.
 

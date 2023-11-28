@@ -30,8 +30,8 @@ class Mai_Popup {
 		$args['class']        = esc_attr( $args['class'] );
 		$args['trigger']      = sanitize_key( $args['trigger'] );
 		$args['animate']      = sanitize_key( $args['animate'] );
-		$args['distance']     = (int) preg_replace( '/[^0-9]/', '', $args['distance'] );
-		$args['delay']        = (int) preg_replace( '/[^0-9]/', '', $args['delay'] );
+		$args['distance']     = (int) preg_replace( '/[^0-9]/', '', sanitize_text_field( (string) $args['distance'] ) );
+		$args['delay']        = (int) preg_replace( '/[^0-9]/', '', sanitize_text_field( (string) $args['delay'] ) );
 		$args['position']     = esc_html( $args['position'] );
 		$args['width']        = trim( esc_html( $args['width'] ) );
 		$args['padding']      = sanitize_key( $args['padding'] );
@@ -142,13 +142,15 @@ class Mai_Popup {
 
 		// Add background color.
 		if ( $this->args['background'] ) {
-			$args['class'] .= sprintf( ' has-%s-background-color', $this->args['background'] );
+			$name = 'link' === $this->args['background'] ? 'links' : $this->args['background'];
+			$args['class'] .= sprintf( ' has-%s-background-color', $name );
 			$args['style'] .= sprintf( '--mai-popup-close-background:var(--color-%s);', $this->args['background'] );
 		}
 
 		// Add text color.
 		if ( $this->args['color'] ) {
-			$args['class'] .= sprintf( ' has-%s-color', $this->args['color'] );
+			$name = 'link' === $this->args['color'] ? 'links' : $this->args['color'];
+			$args['class'] .= sprintf( ' has-%s-color', $name );
 			$args['style'] .= sprintf( '--mai-popup-close-color:var(--color-%s);', $this->args['color'] );
 		}
 
