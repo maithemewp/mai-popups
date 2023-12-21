@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.3 (12/21/23)
+* Fixed: Distance was value removing trailing zero and using wrong value.
+
 ## 0.5.2 (11/28/23)
 * Fixed: Compatibility with WP 6.4, changing has-link- to has-links- class name to avoid conflict.
 * Fixed: PHP warning if distance or delay is null.

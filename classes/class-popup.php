@@ -30,8 +30,8 @@ class Mai_Popup {
 		$args['class']        = esc_attr( $args['class'] );
 		$args['trigger']      = sanitize_key( $args['trigger'] );
 		$args['animate']      = sanitize_key( $args['animate'] );
-		$args['distance']     = rtrim( floatval( sanitize_text_field( (string) $args['distance'] ) ), '.0' );
-		$args['delay']        = rtrim( floatval( sanitize_text_field( (string) $args['delay'] ) ), '.0' );
+		$args['distance']     = $this->sanitize_float( $args['distance'] );
+		$args['delay']        = $this->sanitize_float( $args['delay'] );
 		$args['position']     = esc_html( $args['position'] );
 		$args['width']        = trim( esc_html( $args['width'] ) );
 		$args['padding']      = sanitize_key( $args['padding'] );
@@ -45,6 +45,24 @@ class Mai_Popup {
 		// Set props.
 		$this->args    = $args;
 		$this->content = $content;
+	}
+
+	/**
+	 * Sanitize a format a float value.
+	 *
+	 * @since 0.5.3
+	 *
+	 * @return string
+	 */
+	function sanitize_float( $value ) {
+		$value = sanitize_text_field( (string) $value );
+
+		// Remove trailing `.0`.
+		if ( '.0' === substr( $value, -2 ) ) {
+			$value = substr( $value, 0, -2 );
+		}
+
+		return $value;
 	}
 
 	/**

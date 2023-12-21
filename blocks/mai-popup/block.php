@@ -42,7 +42,7 @@ function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_b
 	$args['id']           = get_field( 'id' );
 	$args['trigger']      = get_field( 'trigger' );
 	$args['animate']      = get_field( 'animate' );
-	$args['text']         = get_field( 'text' );
+	$args['distance']     = get_field( 'distance' );
 	$args['delay']        = get_field( 'delay' );
 	$args['width']        = get_field( 'width' );
 	$args['padding']      = get_field( 'padding' );
