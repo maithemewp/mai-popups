@@ -25,8 +25,8 @@
 				return;
 			}
 
-			// Check cookie.
-			if ( 'true' === popup.dataset.cookie ) {
+			// Check cookie if not manually triggered.
+			if ( 'manual' !== popup.dataset.type && 'true' === popup.dataset.cookie ) {
 				var cookie  = popup.getAttribute( 'id' ) + '=1';
 				var cookies = document.cookie.split( '; ' );
 
