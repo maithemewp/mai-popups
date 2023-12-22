@@ -120,13 +120,15 @@ class Mai_Popup {
 		}
 
 		// Set vars.
-		$id     = ltrim( $this->args['id'], '#' );
-		$cookie = $this->use_cookie();
+		$id           = ltrim( $this->args['id'], '#' );
+		$check_cookie = $this->use_cookie();
 
+		// No longer using this because it may be manually linked.
+		// See issue #6.
 		// Bail if already cookied. Caching may get passed this.
-		if ( $cookie && $_COOKIE && isset( $_COOKIE[ $id ] ) ) {
-			return;
-		}
+		// if ( $check_cookie && $_COOKIE && isset( $_COOKIE[ $id ] ) ) {
+		// 	return;
+		// }
 
 		// If first, enqueue scripts and styles.
 		if ( $first ) {
@@ -209,7 +211,7 @@ class Mai_Popup {
 		}
 
 		// If a cookie popup.
-		if ( $cookie ) {
+		if ( $check_cookie ) {
 			// Add cookie attribute, for JS cookie check since caching sometimes gets through PHP.
 			$args['data-cookie'] = 'true';
 
