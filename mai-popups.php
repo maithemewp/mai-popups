@@ -4,7 +4,7 @@
  * Plugin Name:     Mai Popups
  * Plugin URI:      https://bizbudding.com/mai-theme/
  * Description:     A lightweight and flexible popup, slideup, notice, and hello bar block.
- * Version:         0.5.4-beta.1
+ * Version:         0.5.4-beta.2
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
@@ -92,7 +92,7 @@ final class Mai_Popups_Plugin {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'MAI_POPUPS_VERSION' ) ) {
-			define( 'MAI_POPUPS_VERSION', '0.5.4-beta.1' );
+			define( 'MAI_POPUPS_VERSION', '0.5.4-beta.2' );
 		}
 
 		// Plugin Folder Path.
