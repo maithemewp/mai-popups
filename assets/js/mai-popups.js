@@ -25,10 +25,17 @@
 				return;
 			}
 
-			console.log( 'manual' !== popup.dataset.type );
+			// Bail if already open. This can happen if a popup is triggered by multiple events,
+			// including a click on the popup followed by a timed popup.
+			if ( popup.open ) {
+				return;
+			}
+
+			// Check if there is an event, and it's a click.
+			const isClick = event && 'click' === event.type;
 
 			// Check cookie if not manually triggered.
-			if ( 'manual' !== popup.dataset.type && 'true' === popup.dataset.cookie ) {
+			if ( ! isClick && 'true' === popup.dataset.cookie ) {
 				var cookie  = popup.getAttribute( 'id' ) + '=1';
 				var cookies = document.cookie.split( '; ' );
 
@@ -159,7 +166,7 @@
 			triggers.forEach( ( trigger ) => {
 				trigger.addEventListener( 'click', ( event ) => {
 					event.preventDefault();
-					openPopup( event.currentTarget.getAttribute( 'href' ) );
+					openPopup( event.currentTarget.getAttribute( 'href' ), event );
 				}, false );
 			});
 		}
