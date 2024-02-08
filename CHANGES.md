@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 (TBD)
+* Changed: Always load popups, even if cookied, so manual links work.
+* Changed: Load styles and scripts on demand so they are always available no matter where/when the popup is loaded.
+* Changed: Removed unecessary `render_block` filter.
+* Fixed: Timed/Scroll popups were not available after closed (cookied) even if it's set to manually launch via a manual link.
+
 ## 0.5.3 (12/21/23)
 * Fixed: Distance was value removing trailing zero and using wrong value.
 
