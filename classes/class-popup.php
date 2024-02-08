@@ -83,6 +83,7 @@ class Mai_Popup {
 			return;
 		}
 
+		// If preview or in footer, display now.
 		if ( $this->args['preview'] || $this->is_footer() ) {
 			// Display where we are and hope for the best.
 			echo $this->get();
@@ -104,8 +105,6 @@ class Mai_Popup {
 	 * @return string
 	 */
 	function get() {
-		static $first = true;
-
 		// Check custom condition.
 		if ( $this->args['condition'] ) {
 			if ( is_callable( $this->args['condition'] ) ) {
@@ -129,15 +128,6 @@ class Mai_Popup {
 		// if ( $check_cookie && $_COOKIE && isset( $_COOKIE[ $id ] ) ) {
 		// 	return;
 		// }
-
-		// If first, enqueue scripts and styles.
-		if ( $first ) {
-			if ( $this->is_footer() ) {
-				$this->enqueue();
-			} else {
-				add_action( 'wp_footer', [ $this, 'enqueue' ] );
-			}
-		}
 
 		$html  = '';
 		$width = sprintf( '%s%s', $this->args['width'], is_numeric( $this->args['width'] ) ? 'px' : '' );
@@ -233,11 +223,40 @@ class Mai_Popup {
 
 		// Build HTML.
 		$html .= sprintf( '<%s%s>', $tag, $atts );
+			$html .= $this->get_scripts_styles();
 			$html .= $this->content;
 			$html .= $this->get_close_button();
 		$html .= sprintf( '</%s>', $tag );
 
-		$first = false;
+		return $html;
+	}
+
+	/**
+	 * Get scripts and styles on-demand.
+	 *
+	 * @since 0.6.0
+	 *
+	 * @return string
+	 */
+	function get_scripts_styles() {
+		static $first = true;
+
+		// Start HTML.
+		$html = '';
+
+		// If first instance and not in preview. Preview has its own styles and doesn't need scripts.
+		if ( $first && ! $this->args['preview'] ) {
+			$suffix   = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+			$version  = MAI_POPUPS_VERSION;
+			$css_path = MAI_POPUPS_PLUGIN_DIR . "assets/css/mai-popups{$suffix}.css";
+			$css_url  = MAI_POPUPS_PLUGIN_URL . "assets/css/mai-popups{$suffix}.css";
+			$js_path  = MAI_POPUPS_PLUGIN_DIR . "assets/js/mai-popups{$suffix}.js";
+			$js_url   = MAI_POPUPS_PLUGIN_URL . "assets/js/mai-popups{$suffix}.js";
+			$html    .= sprintf( '<link id="mai-popups-css" rel="stylesheet" href="%s?ver=%s">', $css_url, $version . '.' . date( 'njYHi', filemtime( $css_path ) ) );
+			$html    .= sprintf( '<script id="mai-popups-js" src="%s?ver=%s"></script>', $js_url, $version . '.' . date( 'njYHi', filemtime( $js_path ) ) );
+
+			$first = false;
+		}
 
 		return $html;
 	}
@@ -284,13 +303,14 @@ class Mai_Popup {
 
 	/**
 	 * If in or after the footer.
+	 * This should match `mai_render_popup_block()` in `blocks/mai-popup/block.php`.
 	 *
 	 * @since 0.2.0
 	 *
 	 * @return bool
 	 */
 	function is_footer() {
-		return 'wp_footer' === current_action() || did_action( 'wp_footer' );
+		return doing_action( 'wp_footer' ) || did_action( 'wp_footer' );
 	}
 
 	/**
@@ -301,10 +321,7 @@ class Mai_Popup {
 	 * @return void
 	 */
 	function enqueue() {
-		$suffix  = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "assets/css/mai-popups{$suffix}.css", [], MAI_POPUPS_VERSION );
-		wp_enqueue_script( 'mai-popups', MAI_POPUPS_PLUGIN_URL . "assets/js/mai-popups{$suffix}.js", [], MAI_POPUPS_VERSION, true );
 	}
 }
 // End ! class_exists check.
