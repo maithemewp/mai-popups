@@ -54,8 +54,7 @@ function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_b
 	$content              = $is_preview ? $inner : $content;
 	$content              = do_shortcode( $content );
 
-	$popup = new Mai_Popup( $args, $content );
-	$popup->render();
+	mai_do_popup( $args, $content );
 }
 
 add_action( 'acf/init', 'mai_register_popup_field_group' );
@@ -298,34 +297,4 @@ function mai_prepare_popup_id_field( $field ) {
 	$field['readonly'] = true;
 
 	return $field;
-}
-
-add_filter( 'render_block', 'mai_render_popup_block', 10, 2 );
-/**
- * Moves all popups to footer.
- *
- * @since  0.1.0
- *
- * @param  string $block_content The existing block content.
- * @param  object $block         The button block object.
- *
- * @return string The modified block HTML.
- */
-function mai_render_popup_block( $block_content, $block ) {
-	if ( ! $block_content ) {
-		return $block_content;
-	}
-
-	// Bail if not a popup block.
-	if ( 'acf/mai-popup' !== $block['blockName'] ) {
-		return $block_content;
-	}
-
-	// Move to the footer.
-	add_action( 'wp_footer', function() use ( $block_content ) {
-		echo $block_content;
-	});
-
-	// Return empty.
-	return '';
 }
