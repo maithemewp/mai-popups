@@ -61,7 +61,7 @@
 			popup.show();
 
 			// Close when hitting close icon.
-			popup.querySelectorAll( '.mai-popup__close', '.mai-popup-close' ).forEach( ( close ) => {
+			popup.querySelectorAll( '.mai-popup__close', '.mai-popup-close', '.mai-popup-close a' ).forEach( ( close ) => {
 				close.addEventListener( 'click', ( event ) => {
 					closePopup( popup );
 				});
