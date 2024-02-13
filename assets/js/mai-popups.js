@@ -70,6 +70,9 @@
 			popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' ).forEach( ( close ) => {
 				console.log( close );
 				close.addEventListener( 'click', ( event ) => {
+					// Disable default event.
+					event.preventDefault();
+					// Close.
 					closePopup( popup );
 				});
 			});
