@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.6.0 (TBD)
+* Added: New "Disable closing" setting to disable the close button and disable clicking the overlay to close. This requires a link or button with `mai-popup-close` class in order to close the popup.
 * Changed: Always load popups, even if cookied, so manual links work.
 * Changed: Load styles and scripts on demand so they are always available no matter where/when the popup is loaded.
 * Changed: Removed unecessary `render_block` filter.
