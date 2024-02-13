@@ -28,21 +28,22 @@ function mai_do_popup( $args, $content = '' ) {
 function maipopups_get_defaults() {
 	$defaults = apply_filters( 'mai_popup_default_args',
 		[
-			'id'           => '',                // The HTML id when trigger is manual. Must start with `mai-popup-`.
-			'class'        => '',                // Additional HTML classes.
-			'trigger'      => 'manual',          // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
-			'animate'      => 'fade',            // The type of animation. Accepts 'fade', 'up', and 'down'.
-			'distance'     => '50',              // The percentage distance of scroll before triggering popup when the trigger is 'scroll'.
-			'delay'        => '3',               // The time in seconds before displaying the popup when using 'timed' type. Uses float so it can be decimals.
-			'position'     => 'center center',   // The position of popup, with space-separated values. First value is vertical, second value is horizontal. Accepts 'start', 'center', and 'end'.
-			'width'        => '',                // The max-width of the popup. Accepts any CSS value.
-			'padding'      => 'xl',              // The default padding of the popup.
-			'repeat'       => '7 days',          // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
-			'repeat_roles' => [],                // Roles that should ignore the repeat setting, for testing.
-			'background'   => '',                // Default background color.
-			'color'        => '',                // Default text color.
-			'condition'    => true,              // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
-			'preview'      => false,             // If viewing in editor or not.
+			'id'            => '',                // The HTML id when trigger is manual. Must start with `mai-popup-`.
+			'class'         => '',                // Additional HTML classes.
+			'trigger'       => 'manual',          // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
+			'animate'       => 'fade',            // The type of animation. Accepts 'fade', 'up', and 'down'.
+			'distance'      => '50',              // The percentage distance of scroll before triggering popup when the trigger is 'scroll'.
+			'delay'         => '3',               // The time in seconds before displaying the popup when using 'timed' type. Uses float so it can be decimals.
+			'position'      => 'center center',   // The position of popup, with space-separated values. First value is vertical, second value is horizontal. Accepts 'start', 'center', and 'end'.
+			'width'         => '',                // The max-width of the popup. Accepts any CSS value.
+			'padding'       => 'xl',              // The default padding of the popup.
+			'repeat'        => '7 days',          // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
+			'repeat_roles'  => [],                // Roles that should ignore the repeat setting, for testing.
+			'disable_close' => false,             // Disble the close button and clicking outside to close. Requires 'mai-popup-close' class on an element to close.
+			'background'    => '',                // Default background color.
+			'color'         => '',                // Default text color.
+			'condition'     => true,              // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
+			'preview'       => false,             // If viewing in editor or not.
 		]
 	);
 

@@ -48,12 +48,18 @@
 			open.push( popup );
 
 			// Check if centered modal.
-			const modal = 'center' === popup.dataset.vertical && 'center' === popup.dataset.horizontal;
+			const modal        = 'center' === popup.dataset.vertical && 'center' === popup.dataset.horizontal;
+			const disableClose = 'false' === popup.dataset.close;
 
 			// Maybe add overlay.
 			if ( modal ) {
 				var overlay = document.createElement( 'div' );
 				overlay.setAttribute( 'class', 'mai-popup-overlay' );
+
+				if ( ! disableClose ) {
+					overlay.setAttribute( 'close' );
+				}
+
 				popup.before( overlay );
 			}
 
@@ -61,7 +67,8 @@
 			popup.show();
 
 			// Close when hitting close icon.
-			popup.querySelectorAll( '.mai-popup__close', '.mai-popup-close', '.mai-popup-close a' ).forEach( ( close ) => {
+			popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' ).forEach( ( close ) => {
+				console.log( close );
 				close.addEventListener( 'click', ( event ) => {
 					closePopup( popup );
 				});
@@ -73,7 +80,7 @@
 			}, { once: true } );
 
 			// Adds event listener to close modal when clicking outside.
-			if ( modal ) {
+			if ( modal && ! disableClose ) {
 				overlay.addEventListener( 'click', ( event ) => {
 					closePopup( popup );
 				}, { once: true } );
@@ -96,6 +103,8 @@
 			const seconds  = popup.dataset.expire;
 			const previous = popup.previousElementSibling;
 			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
+
+			console.log( previous );
 
 			// If expiring.
 			if ( seconds ) {

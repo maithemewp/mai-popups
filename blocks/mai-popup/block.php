@@ -34,25 +34,26 @@ function mai_register_popup_block() {
  * @return void
  */
 function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_block, $context ) {
-	$args                 = [];
-	$args['class']        = isset( $attributes['className'] ) ? $attributes['className']: '';
-	$args['position']     = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
-	$args['background']   = isset( $attributes['backgroundColor'] ) ? $attributes['backgroundColor'] : '';
-	$args['color']        = isset( $attributes['textColor'] ) ? $attributes['textColor'] : '';
-	$args['id']           = get_field( 'id' );
-	$args['trigger']      = get_field( 'trigger' );
-	$args['animate']      = get_field( 'animate' );
-	$args['distance']     = get_field( 'distance' );
-	$args['delay']        = get_field( 'delay' );
-	$args['width']        = get_field( 'width' );
-	$args['padding']      = get_field( 'padding' );
-	$args['repeat']       = get_field( 'repeat' );
-	$args['repeat_roles'] = get_field( 'repeat_roles' );
-	$args['preview']      = $is_preview;
-	$template             = [ [ 'core/paragraph', [], [] ] ];
-	$inner                = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
-	$content              = $is_preview ? $inner : $content;
-	$content              = do_shortcode( $content );
+	$args                  = [];
+	$args['class']         = isset( $attributes['className'] ) ? $attributes['className']: '';
+	$args['position']      = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
+	$args['background']    = isset( $attributes['backgroundColor'] ) ? $attributes['backgroundColor'] : '';
+	$args['color']         = isset( $attributes['textColor'] ) ? $attributes['textColor'] : '';
+	$args['id']            = get_field( 'id' );
+	$args['trigger']       = get_field( 'trigger' );
+	$args['animate']       = get_field( 'animate' );
+	$args['distance']      = get_field( 'distance' );
+	$args['delay']         = get_field( 'delay' );
+	$args['width']         = get_field( 'width' );
+	$args['padding']       = get_field( 'padding' );
+	$args['repeat']        = get_field( 'repeat' );
+	$args['repeat_roles']  = get_field( 'repeat_roles' );
+	$args['disable_close'] = get_field( 'disable_close' );
+	$args['preview']       = $is_preview;
+	$template              = [ [ 'core/paragraph', [], [] ] ];
+	$inner                 = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
+	$content               = $is_preview ? $inner : $content;
+	$content               = do_shortcode( $content );
 
 	mai_do_popup( $args, $content );
 }
@@ -78,8 +79,8 @@ function mai_register_popup_field_group() {
 			'title'  => __( 'Mai Popup', 'mai-popups'),
 			'fields' => [
 				[
-					'key'           => 'mai_popup_trigger',
 					'label'         => __( 'Trigger', 'mai-popups' ),
+					'key'           => 'mai_popup_trigger',
 					'name'          => 'trigger',
 					'type'          => 'select',
 					'default_value' => $defaults['trigger'],
@@ -91,8 +92,8 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'           => 'mai_popup_animate',
 					'label'         => __( 'Animation', 'mai-popups' ),
+					'key'           => 'mai_popup_animate',
 					'name'          => 'animate',
 					'type'          => 'select',
 					'default_value' => $defaults['animate'],
@@ -103,8 +104,8 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'               => 'mai_popup_distance',
 					'label'             => __( 'Scroll distance', 'mai-popups' ),
+					'key'               => 'mai_popup_distance',
 					'name'              => 'distance',
 					'type'              => 'number',
 					'default_value'     => $defaults['distance'],
@@ -123,8 +124,8 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'               => 'mai_popup_delay',
 					'label'             => __( 'Delay', 'mai-popups' ),
+					'key'               => 'mai_popup_delay',
 					'name'              => 'delay',
 					'type'              => 'number',
 					'default_value'     => $defaults['delay'],
@@ -143,17 +144,17 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'           => 'mai_popup_width',
 					'label'         => __( 'Width', 'mai-popups' ),
 					'instructions'  => __( 'Accepts any CSS value (px, em, rem, vw, ch, etc.). Using 100% removes margin around content.', 'mai-popups' ),
+					'key'           => 'mai_popup_width',
 					'name'          => 'width',
 					'type'          => 'text',
 					'placeholder'   => '600px',
 					'default_value' => $defaults['width'],
 				],
 				[
-					'key'           => 'mai_popup_padding',
 					'label'         => __( 'Padding', 'mai-popups' ),
+					'key'           => 'mai_popup_padding',
 					'name'          => 'padding',
 					'type'          => 'select',
 					'default_value' => $defaults['padding'],
@@ -168,9 +169,9 @@ function mai_register_popup_field_group() {
 					]
 				],
 				[
-					'key'               => 'mai_popup_repeat',
 					'label'             => __( 'Repeat', 'mai-popups' ),
 					'instructions'      => __( 'The time it takes before this popup will be displayed again for the same user. Use 0 to always show, but beware that this may frustrate your website users.', 'mai-popups' ),
+					'key'               => 'mai_popup_repeat',
 					'name'              => 'repeat',
 					'type'              => 'text',
 					'default_value'     => $defaults['repeat'],
@@ -185,10 +186,10 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'               => 'mai_popup_repeat_roles',
 					'label'             => __( 'Always repeat for user roles', 'mai-popups' ),
-					'name'              => 'repeat_roles',
 					'instructions'      => __( 'Select user roles that will always see this popup, regardless of the setting above.', 'mai-popups' ),
+					'key'               => 'mai_popup_repeat_roles',
+					'name'              => 'repeat_roles',
 					'type'              => 'select',
 					'default_value'     => $defaults['repeat_roles'],
 					'choices'           => [], // Added later.
@@ -207,9 +208,17 @@ function mai_register_popup_field_group() {
 					],
 				],
 				[
-					'key'          => 'mai_popup_link',
+					'label'        => '',
+					'instructions' => __( 'You must add a link or button with "mai-popup-close" class in order to allow closing.', 'mai-popups' ),
+					'message'      => __( 'Disable closing', 'mai-popups' ),
+					'key'          => 'mai_popup_disable_close',
+					'name'         => 'disable_close',
+					'type'         => 'true_false',
+				],
+				[
 					'label'        => __( 'Link', 'mai-popups' ),
 					'instructions' => __( 'Launch this popup by linking any text or button link to the anchor below. The popup must be on the page for the link to work.', 'mai-popups' ),
+					'key'          => 'mai_popup_link',
 					'name'         => 'id',
 					'type'         => 'text',
 				],

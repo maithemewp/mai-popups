@@ -26,21 +26,22 @@ class Mai_Popup {
 		$args = shortcode_atts( maipopups_get_defaults(), $args, $this->key );
 
 		// Sanitize args.
-		$args['id']           = sanitize_key( $args['id'] );
-		$args['class']        = esc_attr( $args['class'] );
-		$args['trigger']      = sanitize_key( $args['trigger'] );
-		$args['animate']      = sanitize_key( $args['animate'] );
-		$args['distance']     = $this->sanitize_float( $args['distance'] );
-		$args['delay']        = $this->sanitize_float( $args['delay'] );
-		$args['position']     = esc_html( $args['position'] );
-		$args['width']        = trim( esc_html( $args['width'] ) );
-		$args['padding']      = sanitize_key( $args['padding'] );
-		$args['repeat']       = trim( esc_html( $args['repeat'] ) );
-		$args['repeat_roles'] = array_map( 'sanitize_key', (array) $args['repeat_roles'] );
-		$args['background']   = sanitize_key( $args['background'] );
-		$args['color']        = sanitize_key( $args['color'] );
-		$args['condition']    = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
-		$args['preview']      = rest_sanitize_boolean( $args['preview'] );
+		$args['id']            = sanitize_key( $args['id'] );
+		$args['class']         = esc_attr( $args['class'] );
+		$args['trigger']       = sanitize_key( $args['trigger'] );
+		$args['animate']       = sanitize_key( $args['animate'] );
+		$args['distance']      = $this->sanitize_float( $args['distance'] );
+		$args['delay']         = $this->sanitize_float( $args['delay'] );
+		$args['position']      = esc_html( $args['position'] );
+		$args['width']         = trim( esc_html( $args['width'] ) );
+		$args['padding']       = sanitize_key( $args['padding'] );
+		$args['repeat']        = trim( esc_html( $args['repeat'] ) );
+		$args['repeat_roles']  = array_map( 'sanitize_key', (array) $args['repeat_roles'] );
+		$args['disable_close'] = rest_sanitize_boolean( $args['disable_close'] );
+		$args['background']    = sanitize_key( $args['background'] );
+		$args['color']         = sanitize_key( $args['color'] );
+		$args['condition']     = rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] );
+		$args['preview']       = rest_sanitize_boolean( $args['preview'] );
 
 		// Set props.
 		$this->args    = $args;
@@ -138,6 +139,7 @@ class Mai_Popup {
 			'style'        => '',
 			'data-type'    => $this->args['trigger'],
 			'data-animate' => $this->args['animate'],
+			'data-close'   => $this->args['disable_close'] ? 'false' : 'true',
 		];
 
 		// Adds custom classes.
@@ -269,6 +271,10 @@ class Mai_Popup {
 	 * @return string
 	 */
 	function get_close_button() {
+		if ( $this->args['disable_close'] ) {
+			return;
+		}
+
 		$text  = __( 'Close', 'mai-popups' );
 		$class = 'mai-popup__close';
 
