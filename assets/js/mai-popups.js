@@ -57,7 +57,7 @@
 				overlay.setAttribute( 'class', 'mai-popup-overlay' );
 
 				if ( ! disableClose ) {
-					overlay.setAttribute( 'close' );
+					overlay.setAttribute( 'close', '' );
 				}
 
 				popup.before( overlay );
@@ -68,7 +68,6 @@
 
 			// Close when hitting close icon.
 			popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' ).forEach( ( close ) => {
-				console.log( close );
 				close.addEventListener( 'click', ( event ) => {
 					// Disable default event.
 					event.preventDefault();
@@ -106,8 +105,6 @@
 			const seconds  = popup.dataset.expire;
 			const previous = popup.previousElementSibling;
 			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
-
-			console.log( previous );
 
 			// If expiring.
 			if ( seconds ) {
