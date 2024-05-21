@@ -13,7 +13,7 @@
 	z-index: 99999;
 	width: calc(100% - (var(--mai-popup-spacing) * 2));
 	max-width: var(--mai-popup-max-width, 100%);
-	max-height: calc(100vh - (var(--mai-popup-spacing) * 2));
+	max-height: calc(100svh - (var(--mai-popup-spacing) * 2));
 	margin: var(--mai-popup-margin, auto);
 	padding: var(--mai-popup-padding, 0);
 	overflow-x: hidden;
