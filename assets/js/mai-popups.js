@@ -2,7 +2,7 @@
 	/**
 	 * Wait until page is loaded.
 	 */
-	window.addEventListener( 'load', function( event ) {
+	window.addEventListener( 'load', ( event ) => {
 		const timed    = document.querySelectorAll( '.mai-popup[data-type="time"]' );
 		const scrolls  = document.querySelectorAll( '.mai-popup[data-type="scroll"]' );
 		const loads    = document.querySelectorAll( '.mai-popup[data-type="load"]' );
@@ -15,7 +15,15 @@
 
 		let open = [];
 
-		const openPopup = function( popup, event = false ) {
+		/**
+		 * Opens a popup.
+		 *
+		 * @param {Element}     popup The popup element.
+		 * @param {Event|false} event The event that triggered the popup.
+		 *
+		 * @return void
+		 */
+		const openPopup = ( popup, event = false ) => {
 			if ( 'string' === typeof popup ) {
 				popup = document.querySelector( popup );
 			}
@@ -89,7 +97,14 @@
 			}
 		}
 
-		const closePopup = function( popup ) {
+		/**
+		 * Closes a popup.
+		 *
+		 * @param {Element} popup
+		 *
+		 * @returns void
+		 */
+		const closePopup = ( popup ) => {
 			/**
 			 * Prevent infinite loops.
 			 * This function is called via clicks when it's modal().
@@ -134,7 +149,22 @@
 					overlay.remove();
 				}
 			}, { once: true } );
+
+			// Stop videos.
+			stopVideos( popup );
 		}
+
+		/**
+		 * Stops videos and resets iframes.
+		 *
+		 * @param {Element} popup
+		 *
+		 * @returns void
+		 */
+		const stopVideos = ( popup ) => {
+			popup.querySelectorAll( 'iframe' ).forEach( v => { v.src = v.src } );
+			popup.querySelectorAll( 'video' ).forEach( v => { v.pause() } );
+		};
 
 		// Close last open popup with escape key.
 		document.addEventListener( 'keyup', ( event ) => {
@@ -195,7 +225,7 @@
 				let timeout;
 
 				// Return a function to run debounced.
-				return function() {
+				return () => {
 					// Setup the arguments.
 					let context = this;
 					let args    = arguments;
