@@ -255,7 +255,7 @@ class Mai_Popup {
 			$js_path  = MAI_POPUPS_PLUGIN_DIR . "assets/js/mai-popups{$suffix}.js";
 			$js_url   = MAI_POPUPS_PLUGIN_URL . "assets/js/mai-popups{$suffix}.js";
 			$html    .= sprintf( '<link id="mai-popups-css" rel="stylesheet" href="%s?ver=%s">', $css_url, $version . '.' . date( 'njYHi', filemtime( $css_path ) ) );
-			$html    .= sprintf( '<script id="mai-popups-js" src="%s?ver=%s"></script>', $js_url, $version . '.' . date( 'njYHi', filemtime( $js_path ) ) );
+			$html    .= sprintf( '<script id="mai-popups-js" src="%s?ver=%s" defer></script>', $js_url, $version . '.' . date( 'njYHi', filemtime( $js_path ) ) );
 
 			$first = false;
 		}
