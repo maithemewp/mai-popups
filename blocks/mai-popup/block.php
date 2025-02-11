@@ -276,6 +276,10 @@ add_filter( 'acf/load_field/key=mai_popup_repeat_roles', 'mai_load_popup_repeat_
  * @return array
  */
 function mai_load_popup_repeat_roles( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$choices  = [];
 	$wp_roles = wp_roles();
 
