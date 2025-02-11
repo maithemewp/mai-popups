@@ -69,10 +69,22 @@
 				}
 
 				popup.before( overlay );
+
+				// Focus on popup.
+				// popup.focus();
 			}
 
 			// Show popup.
 			popup.show();
+
+			// If centered modal, focus on popup and disable body scrolling.
+			if ( modal ) {
+				// Focus on popup.
+				popup.focus();
+
+				// Add class to disable body scrolling.
+				document.documentElement.classList.add( 'mai-popup-noscroll' );
+			}
 
 			// Close when hitting close icon.
 			popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' ).forEach( ( close ) => {
@@ -147,6 +159,8 @@
 				// Remove overlay.
 				if ( overlay ) {
 					overlay.remove();
+					// Remove class when modal closes.
+					document.documentElement.classList.remove( 'mai-popup-noscroll' );
 				}
 			}, { once: true } );
 
