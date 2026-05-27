@@ -1,4 +1,5 @@
 {
+	"apiVersion": 3,
 	"name": "acf/mai-popup",
 	"title": "Mai Popup",
 	"description": "A lightweight and flexible popup, slideup, notice, and hello bar block.",
