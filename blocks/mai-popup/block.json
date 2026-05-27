@@ -1,5 +1,4 @@
 {
-	"apiVersion": 3,
 	"name": "acf/mai-popup",
 	"title": "Mai Popup",
 	"description": "A lightweight and flexible popup, slideup, notice, and hello bar block.",
@@ -8,7 +7,7 @@
 	"textdomain": "mai-popups",
 	"editorStyle": "file:./editor.css",
 	"acf": {
-		"mode": "preview",
+		"blockVersion": 3,
 		"renderCallback": "mai_do_popup_block"
 	},
 	"supports": {
