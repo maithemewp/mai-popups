@@ -77,7 +77,7 @@ final class Renderer {
         // Sets trigger attributes.
         match ( $config->trigger ) {
             Trigger::Time   => $args['data-delay']    = (float) $config->delay * 1000,
-            Trigger::Scroll => $args['data-distance'] = $config->distance,
+            Trigger::Scroll => $args['data-distance'] = (int) $config->distance,
             default         => null,
         };
 
@@ -119,6 +119,6 @@ final class Renderer {
         $text  = \__( 'Close', 'mai-popups' );
         $class = 'mai-popup__close';
 
-        return sprintf( '<button class="%s" aria-label="%s"></button>', $class, $text );
+        return sprintf( '<button type="button" class="%s" aria-label="%s"></button>', $class, $text );
     }
 }
