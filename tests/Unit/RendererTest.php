@@ -35,3 +35,10 @@ test( 'default position (center center) emits both position attrs', function () 
     $html = ( new Renderer( new Cookies() ) )->render( Config::fromArray( [] ), '<p>x</p>' );
     expect( $html )->toContain( 'data-horizontal="center" data-vertical="center"' );
 } );
+
+test( 'modal popups get data-modal=true; positioned do not', function () {
+    $modal = ( new \Mai\Popups\Renderer() )->render( \Mai\Popups\Config::fromArray( [ 'position' => 'center center' ] ), '' );
+    $bar   = ( new \Mai\Popups\Renderer() )->render( \Mai\Popups\Config::fromArray( [ 'position' => 'end center' ] ), '' );
+    expect( $modal )->toContain( 'data-modal="true"' );
+    expect( $bar )->not->toContain( 'data-modal' );
+} );

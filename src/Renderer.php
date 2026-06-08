@@ -70,6 +70,11 @@ final class Renderer {
             $args['data-vertical']   = $config->position->vertical->value;
         }
 
+        // Centered modals get a flag so the JS uses showModal() vs show().
+        if ( null !== $config->position && $config->position->isModal() ) {
+            $args['data-modal'] = 'true';
+        }
+
         // Sets trigger attributes.
         match ( $config->trigger ) {
             Trigger::Time   => $args['data-delay']    = (float) $config->delay * 1000,
