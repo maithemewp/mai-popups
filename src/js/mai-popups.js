@@ -3,10 +3,14 @@ import '../css/mai-popups.css';
 const isModal   = ( p ) => 'true' === p.dataset.modal;
 const hasCookie = ( name ) => document.cookie.split( '; ' ).some( ( c ) => c.startsWith( `${ name }=` ) );
 
+export function cookieExpiry( unixSeconds ) {
+	return new Date( parseInt( unixSeconds, 10 ) * 1000 );
+}
+
 function setCookie( popup ) {
 	const expire = popup.dataset.expire;
 	if ( ! expire ) { return; }
-	const date = new Date( parseInt( expire, 10 ) * 1000 ); // server sends a unix timestamp (bug #2 fix)
+	const date = cookieExpiry( expire ); // server sends a unix timestamp (bug #2 fix)
 	document.cookie = `${ popup.id }=1; expires=${ date.toUTCString() }; path=/; SameSite=Lax`;
 }
 
