@@ -1,0 +1,12 @@
+{
+  "name": "mai-popups",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build src/js/mai-popups.js --output-path=build",
+    "start": "wp-scripts start src/js/mai-popups.js --output-path=build",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}

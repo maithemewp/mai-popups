@@ -1,3 +1,5 @@
+import '../css/mai-popups.css';
+
 ( function() {
 	/**
 	 * Wait until page is loaded.
