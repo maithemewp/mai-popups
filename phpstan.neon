@@ -2,6 +2,30 @@ parameters:
     level: 6
     paths:
         - src
+        - includes
+        - blocks
+        - mai-popups.php
+    excludePaths:
+        - stubs/*
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    scanFiles:
+        # ACF is an optional external dependency, not installed via Composer.
+        # Scanning the stub registers its functions so PHPStan can resolve them
+        # (stubFiles only re-types symbols PHPStan already discovered elsewhere,
+        # which never happens for ACF since it is not in vendor/).
+        - stubs/acf.php
+        # Plugin constants are define()'d at runtime in mai-popups.php; scan so
+        # PHPStan can resolve references to them in src/.
+        - stubs/constants.php
+    ignoreErrors:
+        # Legacy singleton pattern in the plugin bootstrap: the untyped
+        # `private static $instance;` property is lazily initialised, so the
+        # `isset( self::$instance )` guard is intentional. PHPStan infers the
+        # property as non-nullable from its sole assignment and flags the guard
+        # as redundant. Refactoring the bootstrap is out of scope for this task.
+        -
+            identifier: isset.property
+            message: '#Static property Mai_Popups_Plugin::\$instance \(Mai_Popups_Plugin\) in isset\(\) is not nullable\.#'
+            path: mai-popups.php
     treatPhpDocTypesAsCertain: false

@@ -128,8 +128,6 @@ final class Mai_Popups_Plugin {
 		require_once __DIR__ . '/vendor/autoload.php';
 		// Includes.
 		foreach ( glob( MAI_POPUPS_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
-		// Classes.
-		foreach ( glob( MAI_POPUPS_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
 		// Blocks.
 		include MAI_POPUPS_PLUGIN_DIR . 'blocks/mai-popup/block.php';
 	}

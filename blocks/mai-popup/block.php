@@ -24,12 +24,12 @@ function mai_register_popup_block() {
  *
  * @since 0.1.0
  *
- * @param array    $attributes The block attributes.
- * @param string   $content The block content.
- * @param bool     $is_preview Whether or not the block is being rendered for editing preview.
- * @param int      $post_id The current post being edited or viewed.
- * @param WP_Block $wp_block The block instance (since WP 5.5).
- * @param array    $context The block context array.
+ * @param array<string,mixed> $attributes The block attributes.
+ * @param string              $content The block content.
+ * @param bool                $is_preview Whether or not the block is being rendered for editing preview.
+ * @param int                 $post_id The current post being edited or viewed.
+ * @param WP_Block            $wp_block The block instance (since WP 5.5).
+ * @param array<string,mixed> $context The block context array.
  *
  * @return void
  */
@@ -222,10 +222,10 @@ add_filter( 'acf/pre_render_field', 'mai_pre_render_popup_padding_field', 10, 2 
  *
  * @since 0.5.0
  *
- * @param array $field
- * @param mixed $post_id
+ * @param array<string,mixed> $field
+ * @param mixed               $post_id
  *
- * @return array
+ * @return array<string,mixed>
  */
 function mai_pre_render_popup_padding_field( $field, $post_id ) {
 	// Bail if not the field we want.
@@ -250,9 +250,9 @@ add_filter( 'acf/load_field/key=mai_popup_repeat_roles', 'mai_load_popup_repeat_
  *
  * @since 0.4.0
  *
- * @param array $field The existing field array.
+ * @param array<string,mixed> $field The existing field array.
  *
- * @return array
+ * @return array<string,mixed>
  */
 function mai_load_popup_repeat_roles( $field ) {
 	if ( ! is_admin() ) {
@@ -277,9 +277,9 @@ add_filter( 'acf/prepare_field/key=mai_popup_link', 'mai_prepare_popup_id_field'
  *
  * @since 0.1.0
  *
- * @param array $field The field data.
+ * @param array<string,mixed> $field The field data.
  *
- * @return array
+ * @return array<string,mixed>
  */
 function mai_prepare_popup_id_field( $field ) {
 	if ( ! $field['value'] ) {

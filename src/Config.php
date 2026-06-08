@@ -28,30 +28,44 @@ final readonly class Config {
 
     /** @param array<string,mixed> $args */
     public static function fromArray( array $args ): self {
-        $args = shortcode_atts( Defaults::get(), $args, 'mai_popup' );
+        $args = \shortcode_atts( Defaults::get(), $args, 'mai_popup' );
 
         return new self(
-            id:           sanitize_key( $args['id'] ),
-            class:        esc_attr( $args['class'] ),
-            trigger:      Trigger::tryFromString( sanitize_key( $args['trigger'] ) ),
-            animate:      Animation::tryFromString( sanitize_key( $args['animate'] ) ),
+            id:           \sanitize_key( $args['id'] ),
+            class:        \esc_attr( $args['class'] ),
+            trigger:      Trigger::tryFromString( \sanitize_key( $args['trigger'] ) ),
+            animate:      Animation::tryFromString( \sanitize_key( $args['animate'] ) ),
             distance:     self::float( $args['distance'] ),
             delay:        self::float( $args['delay'] ),
-            position:     Position::fromString( esc_html( $args['position'] ) ),
-            width:        trim( esc_html( $args['width'] ) ),
-            padding:      sanitize_key( $args['padding'] ),
-            repeat:       trim( esc_html( $args['repeat'] ) ),
-            repeatRoles:  array_map( 'sanitize_key', (array) $args['repeat_roles'] ),
-            disableClose: rest_sanitize_boolean( $args['disable_close'] ),
-            background:   sanitize_key( $args['background'] ),
-            color:        sanitize_key( $args['color'] ),
-            condition:    rest_sanitize_boolean( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] ),
-            preview:      rest_sanitize_boolean( $args['preview'] ),
+            position:     Position::fromString( \esc_html( $args['position'] ) ),
+            width:        trim( \esc_html( $args['width'] ) ),
+            padding:      \sanitize_key( $args['padding'] ),
+            repeat:       trim( \esc_html( $args['repeat'] ) ),
+            repeatRoles:  array_map( '\sanitize_key', (array) $args['repeat_roles'] ),
+            disableClose: \rest_sanitize_boolean( self::boolish( $args['disable_close'] ) ),
+            background:   \sanitize_key( $args['background'] ),
+            color:        \sanitize_key( $args['color'] ),
+            condition:    \rest_sanitize_boolean( self::boolish( is_callable( $args['condition'] ) ? $args['condition']() : $args['condition'] ) ),
+            preview:      \rest_sanitize_boolean( self::boolish( $args['preview'] ) ),
         );
     }
 
     private static function float( mixed $value ): string {
-        $value = sanitize_text_field( (string) $value );
+        $value = \sanitize_text_field( (string) $value );
         return str_ends_with( $value, '.0' ) ? substr( $value, 0, -2 ) : $value;
+    }
+
+    /**
+     * Narrows a mixed value to the bool|string|int union that
+     * rest_sanitize_boolean() accepts, preserving its behavior: scalar
+     * bool/string/int pass through untouched, while any other type
+     * (null, array, object) reduces to its boolean cast exactly as
+     * rest_sanitize_boolean()'s own (bool) fallback would.
+     */
+    private static function boolish( mixed $value ): bool|string|int {
+        return match ( true ) {
+            is_bool( $value ), is_string( $value ), is_int( $value ) => $value,
+            default => (bool) $value,
+        };
     }
 }

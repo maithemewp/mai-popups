@@ -3,6 +3,7 @@
 namespace Mai\Popups;
 
 final class Block {
+    /** @param array<string,mixed> $attributes */
     public static function render( array $attributes, string $content, bool $is_preview ): void {
         $args = [
             'class'         => $attributes['className']       ?? '',

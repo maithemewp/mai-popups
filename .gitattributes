@@ -1,9 +1,11 @@
 /tests             export-ignore
 /docs              export-ignore
+/stubs             export-ignore
 /src/js            export-ignore
 /src/css           export-ignore
 /node_modules      export-ignore
 phpstan.neon       export-ignore
+patchwork.json     export-ignore
 package.json       export-ignore
 package-lock.json  export-ignore
 .gitignore         export-ignore
