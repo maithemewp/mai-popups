@@ -3,6 +3,14 @@
 namespace Mai\Popups;
 
 final class Block {
+    /**
+     * Generates a unique popup anchor id, e.g. "#mai-popup-67abc123".
+     * Used by the ACF "Link" field generator and the editor duplicate-fix script.
+     */
+    public static function generateAnchorId(): string {
+        return \uniqid( '#mai-popup-' );
+    }
+
     /** @param array<string,mixed> $attributes */
     public static function render( array $attributes, string $content, bool $is_preview ): void {
         $args = [

@@ -271,6 +271,25 @@ function mai_load_popup_repeat_roles( $field ) {
 	return $field;
 }
 
+add_action( 'enqueue_block_editor_assets', 'mai_popups_enqueue_editor_assets' );
+/**
+ * Enqueues the editor script that keeps duplicated popup blocks' anchor ids unique (#5).
+ *
+ * @return void
+ */
+function mai_popups_enqueue_editor_assets() {
+	$path = MAI_POPUPS_PLUGIN_DIR . 'build/editor.asset.php';
+
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+
+	/** @var array{dependencies: string[], version: string} $asset */
+	$asset = require $path;
+
+	wp_enqueue_script( 'mai-popups-editor', MAI_POPUPS_PLUGIN_URL . 'build/editor.js', $asset['dependencies'], $asset['version'], true );
+}
+
 add_filter( 'acf/prepare_field/key=mai_popup_link', 'mai_prepare_popup_id_field' );
 /**
  * Sets popup ID and forces readonly.
@@ -283,7 +302,7 @@ add_filter( 'acf/prepare_field/key=mai_popup_link', 'mai_prepare_popup_id_field'
  */
 function mai_prepare_popup_id_field( $field ) {
 	if ( ! $field['value'] ) {
-		$field['value'] = uniqid( '#mai-popup-' );
+		$field['value'] = \Mai\Popups\Block::generateAnchorId();
 	}
 
 	$field['readonly'] = true;
