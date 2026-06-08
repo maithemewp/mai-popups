@@ -63,8 +63,12 @@ final class Renderer {
         }
 
         // Adds position custom properties.
-        $args['data-horizontal'] = $config->position->horizontal->value;
-        $args['data-vertical']   = $config->position->vertical->value;
+        // Legacy emitted these only inside `if ( $this->args['position'] )`, so
+        // an empty position (null Config::$position) emits no attrs at all.
+        if ( null !== $config->position ) {
+            $args['data-horizontal'] = $config->position->horizontal->value;
+            $args['data-vertical']   = $config->position->vertical->value;
+        }
 
         // Sets trigger attributes.
         match ( $config->trigger ) {

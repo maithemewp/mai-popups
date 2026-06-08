@@ -3,11 +3,16 @@
 namespace Mai\Popups;
 
 final class Assets {
-    private bool $first = true;
+    // Once-per-request guard (legacy used `static $first` in get_scripts_styles()).
+    // Static — not per-instance — so the <link>/<script> block emits exactly once
+    // per page across every Popup/Assets instance.
+    // NOTE: Plan 2 replaces this with wp_enqueue_* (which dedupes by handle),
+    // making this static moot — but it's a live bug until then.
+    private static bool $first = true;
 
     public function inlineHead( Config $config ): string {
-        if ( ! $this->first || $config->preview ) { return ''; }
-        $this->first = false;
+        if ( ! self::$first || $config->preview ) { return ''; }
+        self::$first = false;
 
         $suffix  = defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ? '' : '.min';
         $version = MAI_POPUPS_VERSION;

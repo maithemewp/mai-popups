@@ -6,7 +6,13 @@ function maipopups_stub_wp_helpers(): void {
     foreach ( [ 'esc_attr', 'esc_html', 'sanitize_text_field', 'sanitize_key', '__' ] as $fn ) {
         Functions\when( $fn )->returnArg( 1 );
     }
-    Functions\when( 'rest_sanitize_boolean' )->alias( fn ( $v ) => filter_var( $v, FILTER_VALIDATE_BOOLEAN ) );
+    Functions\when( 'rest_sanitize_boolean' )->alias( function ( $value ) {
+        if ( is_string( $value ) ) {
+            $value = strtolower( $value );
+            if ( in_array( $value, [ 'false', '0', '', 'no', 'off' ], true ) ) { return false; }
+        }
+        return (bool) $value;
+    } );
     Functions\when( 'shortcode_atts' )->alias(
         fn ( $defaults, $atts ) => array_merge( $defaults, array_intersect_key( (array) $atts, $defaults ) )
     );

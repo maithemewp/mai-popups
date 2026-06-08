@@ -24,3 +24,14 @@ test( 'Renderer (with Cookies) reproduces ALL legacy snapshots', function ( stri
     $html = preg_replace( '#(data-expire=")\d+(")#', '$1EXPIRE$2', $html );
     maipopups_assert_golden( $name, $html );
 } )->with( 'renderer_all' );
+
+test( 'empty position emits NEITHER data-horizontal NOR data-vertical', function () {
+    $html = ( new Renderer( new Cookies() ) )->render( Config::fromArray( [ 'position' => '' ] ), '<p>x</p>' );
+    expect( $html )->not->toContain( 'data-horizontal' );
+    expect( $html )->not->toContain( 'data-vertical' );
+} );
+
+test( 'default position (center center) emits both position attrs', function () {
+    $html = ( new Renderer( new Cookies() ) )->render( Config::fromArray( [] ), '<p>x</p>' );
+    expect( $html )->toContain( 'data-horizontal="center" data-vertical="center"' );
+} );

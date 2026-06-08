@@ -16,7 +16,8 @@ test( 'config applies defaults and parses types', function () {
 test( 'config sanitizes roles to array', function () {
     $config = Config::fromArray( [ 'repeat_roles' => [ 'administrator', 'editor' ] ] );
     expect( $config->repeatRoles )->toBe( [ 'administrator', 'editor' ] );
-    expect( $config->position->isModal() )->toBeTrue();
+    expect( $config->position )->not->toBeNull();
+    expect( $config->position?->isModal() )->toBeTrue();
 } );
 
 test( 'config resolves a callable condition to a bool', function () {

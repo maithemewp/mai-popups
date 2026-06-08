@@ -14,7 +14,7 @@ final readonly class Config {
         public Animation $animate,
         public string $distance,
         public string $delay,
-        public Position $position,
+        public ?Position $position,
         public string $width,
         public string $padding,
         public string $repeat,
@@ -30,6 +30,11 @@ final readonly class Config {
     public static function fromArray( array $args ): self {
         $args = \shortcode_atts( Defaults::get(), $args, 'mai_popup' );
 
+        // Mirror legacy truthiness: an empty position string yields no Position
+        // (legacy emitted position attrs only inside `if ( $this->args['position'] )`).
+        $pos      = \esc_html( $args['position'] );
+        $position = $pos ? Position::fromString( $pos ) : null;
+
         return new self(
             id:           \sanitize_key( $args['id'] ),
             class:        \esc_attr( $args['class'] ),
@@ -37,7 +42,7 @@ final readonly class Config {
             animate:      Animation::tryFromString( \sanitize_key( $args['animate'] ) ),
             distance:     self::float( $args['distance'] ),
             delay:        self::float( $args['delay'] ),
-            position:     Position::fromString( \esc_html( $args['position'] ) ),
+            position:     $position,
             width:        trim( \esc_html( $args['width'] ) ),
             padding:      \sanitize_key( $args['padding'] ),
             repeat:       trim( \esc_html( $args['repeat'] ) ),
