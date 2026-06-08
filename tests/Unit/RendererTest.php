@@ -2,6 +2,7 @@
 
 use Mai\Popups\Config;
 use Mai\Popups\Renderer;
+use Mai\Popups\Cookies;
 
 beforeEach( function () {
     maipopups_stub_wp_helpers();
@@ -9,15 +10,17 @@ beforeEach( function () {
     \Brain\Monkey\Functions\when( 'current_user_can' )->justReturn( false );
 } );
 
-// Only the non-cookie cases reach full byte-parity in this task; cookie cases are completed when Cookies is wired in (later task).
-dataset( 'renderer_noncookie', [
-    'corner-manual'   => [ 'corner-manual',   [ 'trigger' => 'manual', 'position' => 'end end', 'id' => 'mai-popup-fixed', 'disable_close' => true ] ],
+dataset( 'renderer_all', [
+    'modal-time'      => [ 'modal-time',      [ 'trigger' => 'time', 'delay' => '3', 'position' => 'center center', 'animate' => 'fade', 'width' => '600px', 'padding' => 'md' ] ],
+    'modal-scroll'    => [ 'modal-scroll',    [ 'trigger' => 'scroll', 'distance' => '50', 'position' => 'center center', 'animate' => 'up' ] ],
     'bar-bottom-load' => [ 'bar-bottom-load', [ 'trigger' => 'load', 'position' => 'end center', 'animate' => 'up', 'width' => '100%' ] ],
+    'corner-manual'   => [ 'corner-manual',   [ 'trigger' => 'manual', 'position' => 'end end', 'id' => 'mai-popup-fixed', 'disable_close' => true ] ],
+    'colored-padding' => [ 'colored-padding', [ 'trigger' => 'time', 'repeat' => '7 days', 'background' => 'primary', 'color' => 'white', 'padding' => 'lg', 'class' => 'my-popup' ] ],
 ] );
 
-test( 'Renderer reproduces the legacy markup for non-cookie cases', function ( string $name, array $args ) {
-    $html = ( new Renderer() )->render( Config::fromArray( $args ), '<p>Inner content</p>' );
+test( 'Renderer (with Cookies) reproduces ALL legacy snapshots', function ( string $name, array $args ) {
+    $html = ( new Renderer( new Cookies() ) )->render( Config::fromArray( $args ), '<p>Inner content</p>' );
     $html = preg_replace( '#<link id="mai-popups-css".*?</script>#s', '', $html );
     $html = preg_replace( '#(data-expire=")\d+(")#', '$1EXPIRE$2', $html );
-    maipopups_assert_golden( $name, $html ); // compares against the SAME golden files Task 3 wrote
-} )->with( 'renderer_noncookie' );
+    maipopups_assert_golden( $name, $html );
+} )->with( 'renderer_all' );

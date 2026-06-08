@@ -5,11 +5,15 @@ namespace Mai\Popups;
 use Mai\Popups\Enum\Trigger;
 
 final class Renderer {
+    public function __construct(
+        private ?Cookies $cookies = null,
+        private ?Assets $assets = null,
+    ) {}
+
     /**
      * Builds the popup markup for a given config and content.
      *
-     * Ported from the legacy Mai_Popup::get(). NO cookies and NO asset
-     * injection here — those are wired in a later task.
+     * Ported from the legacy Mai_Popup::get().
      */
     public function render( Config $config, string $content ): string {
         $id    = ltrim( $config->id, '#' );
@@ -69,6 +73,12 @@ final class Renderer {
             default         => null,
         };
 
+        // If a cookie popup, add cookie attributes.
+        if ( $this->cookies?->shouldUse( $config ) ) {
+            $args['data-cookie'] = 'true';
+            $args['data-expire'] = (string) $this->cookies->expires( $config );
+        }
+
         // Build args.
         foreach ( $args as $att => $value ) {
             if ( ! $value ) {
@@ -83,6 +93,7 @@ final class Renderer {
 
         // Build HTML.
         $html .= sprintf( '<%s%s>', $tag, $atts );
+            $html .= $this->assets?->inlineHead( $config ) ?? '';
             $html .= $content;
             $html .= $this->closeButton( $config );
         $html .= sprintf( '</%s>', $tag );
