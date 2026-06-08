@@ -1,10 +1,19 @@
 # Changelog
 
 ## 0.6.0 (TBD)
+* Added: Accessible modal popups using the native `<dialog>` element (native focus trap, inert background, Escape to close, and `::backdrop` for centered modals).
 * Added: New "Disable closing" setting to disable the close button and disable clicking the overlay to close. This requires a link or button with `mai-popup-close` class in order to close the popup.
+* Added: PHP test suite (Pest) and static analysis (PHPStan); modernized to PHP 8.2 with namespaced classes.
+* Changed: Popup styles and scripts now load via the standard WordPress script/style queue from a built bundle.
+* Changed: Body scroll is now locked via CSS only while a modal popup is open.
 * Changed: Always load popups, even if cookied, so manual links work.
-* Changed: Load styles and scripts on demand so they are always available no matter where/when the popup is loaded.
 * Changed: Removed unecessary `render_block` filter.
+* Fixed: Multiple open popups and Escape-to-close no longer corrupt the open-popup tracking.
+* Fixed: Repeat/cookie expiration now sets a valid expiry date (it was previously producing an invalid date).
+* Fixed: Popups no longer fail to close when no CSS animation is defined.
+* Fixed: Focus returns to the triggering element when a popup closes.
+* Fixed: Duplicating a popup block now generates a unique anchor link (#5).
+* Fixed: Close button stays visible on tall popups while scrolling on mobile (#7).
 * Fixed: Timed/Scroll popups were not available after closed (cookied) even if it's set to manually launch via a manual link.
 
 ## 0.5.3 (12/21/23)
