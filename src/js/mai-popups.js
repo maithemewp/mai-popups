@@ -3,6 +3,14 @@ import '../css/mai-popups.css';
 const isModal   = ( p ) => 'true' === p.dataset.modal;
 const hasCookie = ( name ) => document.cookie.split( '; ' ).some( ( c ) => c.startsWith( `${ name }=` ) );
 
+function labelDialog( popup ) {
+	if ( popup.getAttribute( 'aria-labelledby' ) ) { return; }
+	const heading = popup.querySelector( 'h1, h2, h3, h4, h5, h6' );
+	if ( ! heading ) { return; }
+	if ( ! heading.id ) { heading.id = `${ popup.id }-title`; }
+	popup.setAttribute( 'aria-labelledby', heading.id );
+}
+
 export function cookieExpiry( unixSeconds ) {
 	return new Date( parseInt( unixSeconds, 10 ) * 1000 );
 }
@@ -11,7 +19,8 @@ function setCookie( popup ) {
 	const expire = popup.dataset.expire;
 	if ( ! expire ) { return; }
 	const date = cookieExpiry( expire ); // server sends a unix timestamp (bug #2 fix)
-	document.cookie = `${ popup.id }=1; expires=${ date.toUTCString() }; path=/; SameSite=Lax`;
+	const secure = 'https:' === window.location.protocol ? '; Secure' : '';
+	document.cookie = `${ popup.id }=1; expires=${ date.toUTCString() }; path=/; SameSite=Lax${ secure }`;
 }
 
 function stopMedia( popup ) {
@@ -39,8 +48,11 @@ function init() {
 
 		if ( isModal( popup ) ) {
 			popup.showModal();                    // native focus trap + inert + ::backdrop + Esc
+			labelDialog( popup );
+			popup.focus();                        // a11y: focus the titled dialog, not the Close button
 		} else {
 			popup.show();                         // non-modal: no trap, page stays usable
+			labelDialog( popup );
 		}
 		openStack.add( popup );
 	}
@@ -78,12 +90,14 @@ function init() {
 	// Cleanup that must run HOWEVER the dialog closed — programmatic close() OR
 	// native modal Esc (which fires 'close' with popup.open already false).
 	function onClose( popup ) {
-		if ( 'true' === popup.dataset.cookie ) { setCookie( popup ); }
+		const trigger = triggerFor.get( popup );
+		// Only auto-triggered opens (no trigger element) write the suppression cookie;
+		// a manual link open shouldn't disable the later auto-show.
+		if ( 'true' === popup.dataset.cookie && ! trigger ) { setCookie( popup ); }
 		stopMedia( popup );
 		popup.removeAttribute( 'closing' );
 		openStack.delete( popup );
-		const t = triggerFor.get( popup );        // bug #4 fix: restore focus to trigger
-		if ( t && typeof t.focus === 'function' ) { t.focus(); }
+		if ( trigger && typeof trigger.focus === 'function' ) { trigger.focus(); } // bug #4 fix: restore focus
 		triggerFor.delete( popup );
 	}
 
@@ -102,10 +116,12 @@ function init() {
 		}
 	} );
 
-	// Esc for NON-modal popups only (modal Esc fires native 'close' above).
+	// Esc closes only the topmost NON-modal popup (modal Esc fires native 'close' above).
 	document.addEventListener( 'keydown', ( e ) => {
 		if ( 'Escape' !== e.key ) { return; }
-		document.querySelectorAll( '.mai-popup[open]:not([data-modal="true"])' ).forEach( requestClose );
+		const stack = [ ...openStack ].filter( ( p ) => p.open && ! isModal( p ) );
+		const top = stack[ stack.length - 1 ];
+		if ( top ) { requestClose( top ); }
 	} );
 
 	// Manual-link triggers.
@@ -127,26 +143,22 @@ function init() {
 	if ( scrollers.length ) { initScroll( scrollers, open ); }
 }
 
-// IntersectionObserver scroll trigger. Replaces the old scroll listener + rAF
-// debounce + manual getScrollPercentage with a 1px sentinel placed at the same
-// document offset the legacy main-relative percentage logic would have triggered at.
+// IntersectionObserver scroll trigger. A 1px sentinel is placed at the document
+// position that enters the viewport once the visitor has scrolled `distance`% through
+// the scrollable page. Measuring against documentElement.scrollHeight (not a
+// <main>-relative offset) is correct without a <main> and on positioned layouts; a
+// short/unscrollable page fires immediately (treated as already past the threshold).
 function initScroll( popups, open ) {
-	// Same tracker as the legacy code: scroll progress is measured through <main>.
-	const tracker = document.querySelector( 'main' ) || document.body;
-
 	popups.forEach( ( popup ) => {
 		const distance = Math.min( 100, Math.max( 0, parseInt( popup.dataset.distance, 10 ) || 0 ) );
 
-		// 1px sentinel; fires when it enters the viewport from the bottom.
 		const sentinel = document.createElement( 'div' );
 		sentinel.setAttribute( 'aria-hidden', 'true' );
 		Object.assign( sentinel.style, { position: 'absolute', left: '0', width: '1px', height: '1px', pointerEvents: 'none' } );
 
-		// Reproduce the legacy trigger point: solving the old
-		// getScrollPercentage(main) >= distance for scroll position, the sentinel's
-		// document offset is main.offsetTop + (distance/100)*(viewport + main height).
 		const place = () => {
-			const top = Math.round( tracker.offsetTop + ( distance / 100 ) * ( window.innerHeight + tracker.offsetHeight ) );
+			const scrollable = Math.max( 0, document.documentElement.scrollHeight - window.innerHeight );
+			const top = Math.round( ( distance / 100 ) * scrollable + window.innerHeight );
 			sentinel.style.top = `${ top }px`;
 		};
 		place();
@@ -161,10 +173,10 @@ function initScroll( popups, open ) {
 				open( popup );
 			}
 		} );
-		// Keep the trigger point correct if the viewport or content height changes.
+		// Recompute on layout/content/viewport changes that move the threshold.
 		ro = new ResizeObserver( place );
 		io.observe( sentinel );
-		ro.observe( tracker );
+		ro.observe( document.body );
 	} );
 }
 
