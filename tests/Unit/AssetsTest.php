@@ -49,6 +49,9 @@ test( 'enqueue() enqueues the registered script and style by handle', function (
     $script = null;
     $style  = null;
 
+    // Pretend the handle is already registered (normal flow: register() ran on wp_enqueue_scripts).
+    Functions\when( 'wp_script_is' )->justReturn( true );
+
     Functions\expect( 'wp_enqueue_script' )
         ->once()
         ->andReturnUsing( function ( $handle ) use ( &$script ) { $script = $handle; } );
