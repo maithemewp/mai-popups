@@ -73,9 +73,11 @@ git mv assets/css/mai-popups.css src/css/mai-popups.css
 Run: `npm run build`
 Expected: `build/mai-popups.js`, `build/mai-popups.css`, and `build/*.asset.php` are produced.
 
-- [ ] **Step 4: Add build output + node_modules ignores**
+- [ ] **Step 4: Verify build/ ships and dev sources are export-ignored (set up in Plan 1)**
 
-Append to `.gitignore`: `/node_modules/`. Do **not** ignore `/build/` (we ship it; PUC pulls source). Add `/src/` and config files to a `.gitattributes` `export-ignore` later (note for release).
+Plan 1 (Step 2b) already established the `.gitignore` prod-vendor whitelist and a `.gitattributes` that `export-ignore`s `/src/js`, `/src/css`, `/node_modules`, `package.json`, `package-lock.json`. So the JS/CSS *source* is excluded from the distributed archive while the built `build/` directory ships. Verify rather than re-add:
+Run: `git check-attr export-ignore build/mai-popups.js src/js/mai-popups.js`
+Expected: `build/...: export-ignore: unspecified` (ships); `src/js/...: export-ignore: set` (excluded). No new ignore entries needed.
 
 - [ ] **Step 5: Commit**
 
@@ -379,6 +381,8 @@ final class Assets {
     }
 }
 ```
+
+> Note: per-popup config flows via `data-*` attributes, so no script localization is needed. If a global JS data object is ever required, use `wp_add_inline_script( 'mai-popups', 'window.maiPopups = …;', 'before' )` — never `wp_localize_script`.
 
 - [ ] **Step 2: Renderer no longer injects assets inline**
 
