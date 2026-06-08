@@ -83,6 +83,36 @@ Merge into `composer.json` (keep the existing `require` PUC entry):
 Run: `composer update` (in `~/Plugins/mai-popups`)
 Expected: `vendor/bin/pest` and `vendor/bin/phpstan` exist; no resolver errors.
 
+- [ ] **Step 2b: Keep dev deps OUT of the shipped plugin (vendor hygiene)**
+
+mai-popups ships `vendor/` committed (no `composer install` on client sites), so dev tools must never land in committed vendor or the distributed ZIP.
+
+1. Whitelist prod-only vendor — append to `.gitignore`:
+```
+/vendor/*
+!/vendor/autoload.php
+!/vendor/composer/
+!/vendor/yahnis-elsts/
+```
+2. Create `.gitattributes` so the GitHub release archive (what PUC downloads) excludes dev/source cruft (`build/` is NOT ignored — it ships):
+```
+/tests             export-ignore
+/docs              export-ignore
+/src/js            export-ignore
+/src/css           export-ignore
+/node_modules      export-ignore
+phpstan.neon       export-ignore
+package.json       export-ignore
+package-lock.json  export-ignore
+.gitignore         export-ignore
+.gitattributes     export-ignore
+```
+> Verify this plugin's PUC uses the GitHub-generated source archive (default — honors `export-ignore`). If it uses a custom release asset, gate dev exclusion in that build step instead.
+
+3. Regenerate the committed vendor as production-only so the autoloader/manifest don't reference dev packages:
+Run: `composer install --no-dev -o` (produces the committable vendor), then `composer install` again afterward to restore dev tools for local test runs.
+Expected: `git status` shows no dev packages under `vendor/` as tracked/added.
+
 - [ ] **Step 3: Create `phpstan.neon`**
 
 ```neon
@@ -151,9 +181,10 @@ Expected: 1 passing test.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add composer.json composer.lock phpstan.neon tests/
-git commit -m "Add Pest + Brain Monkey + PHPStan test/tooling foundation"
+git add composer.json composer.lock .gitignore .gitattributes phpstan.neon tests/
+git commit -m "Add Pest + Brain Monkey + PHPStan tooling; keep dev deps out of shipped vendor"
 ```
+> Note: vendor/ autoload changes are committed in Task 2 (after the PSR-4 dump); Task 1 commits no vendor packages — dev deps are gitignored, PUC is already committed.
 
 ---
 
