@@ -1,0 +1,32 @@
+<?php
+
+namespace Mai\Popups;
+
+final class Block {
+    public static function render( array $attributes, string $content, bool $is_preview ): void {
+        $args = [
+            'class'         => $attributes['className']       ?? '',
+            'position'      => $attributes['alignContent']    ?? '',
+            'background'    => $attributes['backgroundColor'] ?? '',
+            'color'         => $attributes['textColor']       ?? '',
+            'id'            => (string) \get_field( 'id' ),
+            'trigger'       => (string) \get_field( 'trigger' ),
+            'animate'       => (string) \get_field( 'animate' ),
+            'distance'      => (string) \get_field( 'distance' ),
+            'delay'         => (string) \get_field( 'delay' ),
+            'width'         => (string) \get_field( 'width' ),
+            'padding'       => (string) \get_field( 'padding' ),
+            'repeat'        => (string) \get_field( 'repeat' ),
+            'repeat_roles'  => (array) \get_field( 'repeat_roles' ),
+            'disable_close' => (bool) \get_field( 'disable_close' ),
+            'preview'       => $is_preview,
+        ];
+
+        if ( $is_preview ) {
+            $template = \wp_json_encode( [ [ 'core/paragraph', [], [] ] ] );
+            $content  = sprintf( '<InnerBlocks template="%s" />', \esc_attr( $template ) );
+        }
+
+        ( new Popup( Config::fromArray( $args ), \do_shortcode( $content ) ) )->render();
+    }
+}

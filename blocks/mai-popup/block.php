@@ -34,28 +34,7 @@ function mai_register_popup_block() {
  * @return void
  */
 function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_block, $context ) {
-	$args                  = [];
-	$args['class']         = isset( $attributes['className'] ) ? $attributes['className']: '';
-	$args['position']      = isset( $attributes['alignContent'] ) ? $attributes['alignContent']: '';
-	$args['background']    = isset( $attributes['backgroundColor'] ) ? $attributes['backgroundColor'] : '';
-	$args['color']         = isset( $attributes['textColor'] ) ? $attributes['textColor'] : '';
-	$args['id']            = get_field( 'id' );
-	$args['trigger']       = get_field( 'trigger' );
-	$args['animate']       = get_field( 'animate' );
-	$args['distance']      = get_field( 'distance' );
-	$args['delay']         = get_field( 'delay' );
-	$args['width']         = get_field( 'width' );
-	$args['padding']       = get_field( 'padding' );
-	$args['repeat']        = get_field( 'repeat' );
-	$args['repeat_roles']  = get_field( 'repeat_roles' );
-	$args['disable_close'] = get_field( 'disable_close' );
-	$args['preview']       = $is_preview;
-	$template              = [ [ 'core/paragraph', [], [] ] ];
-	$inner                 = sprintf( '<InnerBlocks template="%s" />', esc_attr( wp_json_encode( $template ) ) );
-	$content               = $is_preview ? $inner : $content;
-	$content               = do_shortcode( $content );
-
-	mai_do_popup( $args, $content );
+	\Mai\Popups\Block::render( (array) $attributes, (string) $content, (bool) $is_preview );
 }
 
 add_action( 'acf/init', 'mai_register_popup_field_group' );
