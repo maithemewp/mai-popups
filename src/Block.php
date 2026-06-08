@@ -11,9 +11,17 @@ final class Block {
         return \uniqid( '#mai-popup-' );
     }
 
-    /** @param array<string,mixed> $attributes */
-    public static function render( array $attributes, string $content, bool $is_preview ): void {
-        $args = [
+    /**
+     * Maps ACF block attributes + fields into Mai\Popups\Config args.
+     *
+     * The real production entry point for block popups: a renamed ACF field
+     * key would silently break every popup, so this mapping is unit-tested.
+     *
+     * @param array<string,mixed> $attributes
+     * @return array<string,mixed>
+     */
+    public static function args( array $attributes, bool $is_preview ): array {
+        return [
             'class'         => $attributes['className']       ?? '',
             'position'      => $attributes['alignContent']    ?? '',
             'background'    => $attributes['backgroundColor'] ?? '',
@@ -30,6 +38,11 @@ final class Block {
             'disable_close' => (bool) \get_field( 'disable_close' ),
             'preview'       => $is_preview,
         ];
+    }
+
+    /** @param array<string,mixed> $attributes */
+    public static function render( array $attributes, string $content, bool $is_preview ): void {
+        $args = self::args( $attributes, $is_preview );
 
         if ( $is_preview ) {
             $template = \wp_json_encode( [ [ 'core/paragraph', [], [] ] ] );

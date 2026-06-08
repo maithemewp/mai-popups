@@ -16,6 +16,9 @@ dataset( 'renderer_all', [
     'bar-bottom-load' => [ 'bar-bottom-load', [ 'trigger' => 'load', 'position' => 'end center', 'animate' => 'up', 'width' => '100%' ] ],
     'corner-manual'   => [ 'corner-manual',   [ 'trigger' => 'manual', 'position' => 'end end', 'id' => 'mai-popup-fixed', 'disable_close' => true ] ],
     'colored-padding' => [ 'colored-padding', [ 'trigger' => 'time', 'repeat' => '7 days', 'background' => 'primary', 'color' => 'white', 'padding' => 'lg', 'class' => 'my-popup' ] ],
+    'animate-down'    => [ 'animate-down',    [ 'trigger' => 'load', 'position' => 'center center', 'animate' => 'down' ] ],
+    'preview'         => [ 'preview',         [ 'trigger' => 'load', 'position' => 'center center', 'preview' => true ] ],
+    'full-width-vw'   => [ 'full-width-vw',   [ 'trigger' => 'load', 'position' => 'center center', 'width' => '100vw' ] ],
 ] );
 
 test( 'Renderer (with Cookies) reproduces ALL legacy snapshots', function ( string $name, array $args ) {
