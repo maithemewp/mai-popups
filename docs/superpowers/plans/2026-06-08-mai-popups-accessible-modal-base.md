@@ -18,9 +18,8 @@
 
 **Create:**
 - `package.json` — `@wordpress/scripts` build + test scripts
-- `src/js/mai-popups.js` — the rewritten dialog driver (build entry)
-- `src/js/scroll.js` — scroll-distance trigger helper
-- `tests/js/cookies.test.js`, `tests/js/open-stack.test.js` — Jest unit tests for pure helpers
+- `src/js/mai-popups.js` — the rewritten dialog driver (single bundled entry; pure helpers exported for tests; IntersectionObserver-based scroll triggers)
+- `tests/js/cookies.test.js` — Jest unit test for the exported cookie-expiry helper
 
 **Modify:**
 - `src/Renderer.php` — add `data-modal` attribute for modal popups
@@ -140,7 +139,7 @@ Replaces the four bugs: (1) open-stack `splice` corruption → a `Set`; (2) cook
 - [ ] **Step 1: Write `src/js/mai-popups.js`**
 
 ```js
-import { initScroll } from './scroll';
+// initScroll (IntersectionObserver) is defined at the bottom of this same file.
 
 const isModal   = ( p ) => 'true' === p.dataset.modal;
 const hasCookie = ( name ) => document.cookie.split( '; ' ).some( ( c ) => c.startsWith( `${ name }=` ) );
@@ -247,34 +246,42 @@ if ( document.readyState !== 'loading' ) { init(); }
 else { document.addEventListener( 'DOMContentLoaded', init ); }
 ```
 
-- [ ] **Step 2: Write `src/js/scroll.js`** (ports `getScrollPercentage` + rAF debounce from the old file, `class assets/js` lines 230-321)
+- [ ] **Step 2: Add the IntersectionObserver scroll trigger (in `mai-popups.js`)**
+
+Replaces the old `scroll` listener + rAF debounce + manual `getScrollPercentage` (old file lines 230-321) with a sentinel + `IntersectionObserver`. No scroll handler, no per-frame math.
 
 ```js
-export function initScroll( popups, open ) {
-	const tracker = document.querySelector( 'main' ) || document.body;
-	let data = popups.map( ( p ) => ( { distance: parseInt( p.dataset.distance, 10 ), el: p } ) );
+function initScroll( popups, open ) {
+	popups.forEach( ( popup ) => {
+		const distance = Math.min( 100, Math.max( 0, parseInt( popup.dataset.distance, 10 ) || 0 ) );
 
-	const pct = () => {
-		const wh = window.innerHeight;
-		const d  = window.scrollY + wh - tracker.offsetTop;
-		return Math.min( 100, Math.max( 0, Math.round( d / ( ( wh + tracker.offsetHeight ) / 100 ) ) ) );
-	};
+		// A 1px sentinel placed at `distance%` of the page height; fire when it enters the viewport.
+		const sentinel = document.createElement( 'div' );
+		sentinel.setAttribute( 'aria-hidden', 'true' );
+		Object.assign( sentinel.style, { position: 'absolute', left: '0', width: '1px', height: '1px', pointerEvents: 'none' } );
 
-	let raf;
-	window.addEventListener( 'scroll', () => {
-		if ( raf ) { cancelAnimationFrame( raf ); }
-		raf = requestAnimationFrame( () => {
-			if ( ! data.length ) { return; }
-			const scrolled = pct();
-			data = data.filter( ( d ) => {
-				if ( scrolled < d.distance ) { return true; }
-				open( d.el );
-				return false; // fire once
-			} );
+		// Absolute, no positioned ancestor → top is measured from the document origin (scrolls with the page).
+		const place = () => { sentinel.style.top = `${ Math.round( ( distance / 100 ) * document.documentElement.scrollHeight ) }px`; };
+		place();
+		document.body.append( sentinel );
+
+		const io = new IntersectionObserver( ( entries ) => {
+			if ( entries.some( ( e ) => e.isIntersecting ) ) {
+				io.disconnect();
+				ro.disconnect();
+				sentinel.remove();
+				open( popup );
+			}
 		} );
-	}, { passive: true } );
+		io.observe( sentinel );
+
+		// Keep the trigger depth correct if content height changes (lazy images, etc.).
+		const ro = new ResizeObserver( place );
+		ro.observe( document.documentElement );
+	} );
 }
 ```
+> `IntersectionObserver` + `ResizeObserver` are baseline-supported in all evergreen browsers. This removes the debounce helper and the `main`-relative percentage math entirely.
 
 - [ ] **Step 3: Build**
 
@@ -459,11 +466,11 @@ git commit -m "Fix #5: generate unique anchor id when a popup block is duplicate
 
 ## Task 7: Jest unit tests for pure JS helpers; remove old min files
 
-**Files:** Create `tests/js/cookies.test.js`, `tests/js/open-stack.test.js`. Delete `assets/js/mai-popups*.js`.
+**Files:** Create `tests/js/cookies.test.js`. Delete `assets/js/mai-popups*.js`.
 
-- [ ] **Step 1: Export the pure helpers for testing**
+- [ ] **Step 1: Export the pure cookie-expiry helper from `mai-popups.js`**
 
-In `src/js/mai-popups.js`, `export { setCookie }` and a small `export function makeStack()` returning `new Set()` wrappers, or factor `setCookie`/cookie-date parsing into `src/js/cookies.js` and import it. Prefer extracting `src/js/cookies.js`:
+In `src/js/mai-popups.js`, add a named export and use it inside `setCookie`:
 ```js
 export function cookieExpiry( unixSeconds ) {
 	return new Date( parseInt( unixSeconds, 10 ) * 1000 );
@@ -473,7 +480,7 @@ export function cookieExpiry( unixSeconds ) {
 - [ ] **Step 2: Write `tests/js/cookies.test.js`**
 
 ```js
-import { cookieExpiry } from '../../src/js/cookies';
+import { cookieExpiry } from '../../src/js/mai-popups';
 
 test( 'cookieExpiry converts a unix timestamp to a valid Date', () => {
 	const d = cookieExpiry( '1893456000' );
@@ -499,7 +506,7 @@ Update any remaining references to `assets/js|css` paths (there should be none a
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/js/cookies.js tests/js
+git add src/js tests/js
 git commit -m "Add Jest tests for cookie expiry; remove legacy built assets"
 ```
 
