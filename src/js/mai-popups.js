@@ -1,325 +1,168 @@
 import '../css/mai-popups.css';
 
-( function() {
-	/**
-	 * Wait until page is loaded.
-	 */
-	window.addEventListener( 'load', ( event ) => {
-		const timed    = document.querySelectorAll( '.mai-popup[data-type="time"]' );
-		const scrolls  = document.querySelectorAll( '.mai-popup[data-type="scroll"]' );
-		const loads    = document.querySelectorAll( '.mai-popup[data-type="load"]' );
-		const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
+const isModal   = ( p ) => 'true' === p.dataset.modal;
+const hasCookie = ( name ) => document.cookie.split( '; ' ).some( ( c ) => c.startsWith( `${ name }=` ) );
 
-		// Bail if no popups.
-		if ( ! ( timed.length || scrolls.length || loads.length || triggers.length ) ) {
+function setCookie( popup ) {
+	const expire = popup.dataset.expire;
+	if ( ! expire ) { return; }
+	const date = new Date( parseInt( expire, 10 ) * 1000 ); // server sends a unix timestamp (bug #2 fix)
+	document.cookie = `${ popup.id }=1; expires=${ date.toUTCString() }; path=/; SameSite=Lax`;
+}
+
+function stopMedia( popup ) {
+	popup.querySelectorAll( 'iframe' ).forEach( ( v ) => {
+		// eslint-disable-next-line no-self-assign -- reassigning src reloads the iframe to stop playback
+		v.src = v.src;
+	} );
+	popup.querySelectorAll( 'video' ).forEach( ( v ) => v.pause() );
+}
+
+function init() {
+	const popups   = document.querySelectorAll( '.mai-popup' );
+	const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
+	if ( ! popups.length && ! triggers.length ) { return; }
+
+	const openStack  = new Set();                 // bug #1 fix: real stack, not splice()
+	const triggerFor = new WeakMap();             // popup -> element to refocus on close
+
+	function open( popup, trigger = null ) {
+		if ( typeof popup === 'string' ) { popup = document.querySelector( popup ); }
+		if ( ! popup || popup.open ) { return; }
+		if ( ! trigger && 'true' === popup.dataset.cookie && hasCookie( popup.id ) ) { return; }
+
+		if ( trigger ) { triggerFor.set( popup, trigger ); }
+
+		if ( isModal( popup ) ) {
+			popup.showModal();                    // native focus trap + inert + ::backdrop + Esc
+		} else {
+			popup.show();                         // non-modal: no trap, page stays usable
+		}
+		openStack.add( popup );
+	}
+
+	// Animated close REQUEST. Sets [closing], waits for whichever the CSS uses —
+	// a CSS transition OR a keyframe animation — then calls native close(). A
+	// timeout fallback guarantees the popup closes even if no animation/event
+	// fires (bug #3: never hang). Actual cleanup is in onClose() on 'close'.
+	function requestClose( popup ) {
+		if ( ! popup.open ) { return; }
+		popup.setAttribute( 'closing', '' );
+		const cs  = getComputedStyle( popup );
+		const dur = Math.max(
+			parseFloat( cs.transitionDuration ) || 0,
+			parseFloat( cs.animationDuration ) || 0
+		);
+		if ( ! dur ) {
+			popup.removeAttribute( 'closing' );
+			popup.close();
 			return;
 		}
-
-		let open = [];
-
-		/**
-		 * Opens a popup.
-		 *
-		 * @param {Element}     popup The popup element.
-		 * @param {Event|false} event The event that triggered the popup.
-		 *
-		 * @return void
-		 */
-		const openPopup = ( popup, event = false ) => {
-			if ( 'string' === typeof popup ) {
-				popup = document.querySelector( popup );
-			}
-
-			// Bail if no popup.
-			if ( ! popup ) {
-				return;
-			}
-
-			// Bail if already open. This can happen if a popup is triggered by multiple events,
-			// including a click on the popup followed by a timed popup.
-			if ( popup.open ) {
-				return;
-			}
-
-			// Check if there is an event, and it's a click.
-			const isClick = event && 'click' === event.type;
-
-			// Check cookie if not manually triggered.
-			if ( ! isClick && 'true' === popup.dataset.cookie ) {
-				var cookie  = popup.getAttribute( 'id' ) + '=1';
-				var cookies = document.cookie.split( '; ' );
-
-				if ( cookie && cookies && cookies.includes( cookie ) ) {
-					return;
-				}
-			}
-
-			// Set as open.
-			open.push( popup );
-
-			// Check if centered modal.
-			const modal        = 'center' === popup.dataset.vertical && 'center' === popup.dataset.horizontal;
-			const disableClose = 'false' === popup.dataset.close;
-
-			// Maybe add overlay.
-			if ( modal ) {
-				var overlay = document.createElement( 'div' );
-				overlay.setAttribute( 'class', 'mai-popup-overlay' );
-
-				if ( ! disableClose ) {
-					overlay.setAttribute( 'close', '' );
-				}
-
-				popup.before( overlay );
-
-				// Focus on popup.
-				// popup.focus();
-			}
-
-			// Show popup.
-			popup.show();
-
-			// If centered modal, focus on popup and disable body scrolling.
-			if ( modal ) {
-				// Focus on popup.
-				popup.focus();
-
-				// Add class to disable body scrolling.
-				document.documentElement.classList.add( 'mai-popup-noscroll' );
-			}
-
-			// Close when hitting close icon.
-			popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' ).forEach( ( close ) => {
-				close.addEventListener( 'click', ( event ) => {
-					// Disable default event.
-					event.preventDefault();
-					// Close.
-					closePopup( popup );
-				});
-			});
-
-			// Adds event listener for close event.
-			popup.addEventListener( 'close', ( event ) => {
-				closePopup( popup );
-			}, { once: true } );
-
-			// Adds event listener to close modal when clicking outside.
-			if ( modal && ! disableClose ) {
-				overlay.addEventListener( 'click', ( event ) => {
-					closePopup( popup );
-				}, { once: true } );
-			}
-		}
-
-		/**
-		 * Closes a popup.
-		 *
-		 * @param {Element} popup
-		 *
-		 * @returns void
-		 */
-		const closePopup = ( popup ) => {
-			/**
-			 * Prevent infinite loops.
-			 * This function is called via clicks when it's modal().
-			 */
-			if ( ! popup.open ) {
-				return;
-			}
-
-			// Remove from open popups.
-			open = open.splice( open.indexOf( popup ), 1 );
-
-			// Get data.
-			const seconds  = popup.dataset.expire;
-			const previous = popup.previousElementSibling;
-			const overlay  = previous && previous.classList.contains( 'mai-popup-overlay' ) ? previous : false;
-
-			// If expiring.
-			if ( seconds ) {
-				// Build cookie.
-				const expire = new Date();
-				expire.setTime( parseInt( expire ) );
-				const cookie = popup.id + '=1; expires=' + expire.toUTCString() + '; path=/; SameSite=Lax;';
-
-				// Set cookie.
-				document.cookie = cookie.trim();
-			}
-
-			// Add hidden class, for CSS animation.
-			popup.setAttribute( 'closing', '' );
-
-			if ( overlay ) {
-				overlay.setAttribute( 'closing', '' );
-			}
-
-			// Close popup after animation is done.
-			popup.addEventListener( 'animationend', () => {
-				popup.removeAttribute( 'closing' );
-				popup.close();
-
-				// Remove overlay.
-				if ( overlay ) {
-					overlay.remove();
-					// Remove class when modal closes.
-					document.documentElement.classList.remove( 'mai-popup-noscroll' );
-				}
-			}, { once: true } );
-
-			// Stop videos.
-			stopVideos( popup );
-		}
-
-		/**
-		 * Stops videos and resets iframes.
-		 *
-		 * @param {Element} popup
-		 *
-		 * @returns void
-		 */
-		const stopVideos = ( popup ) => {
-			popup.querySelectorAll( 'iframe' ).forEach( v => { v.src = v.src } );
-			popup.querySelectorAll( 'video' ).forEach( v => { v.pause() } );
+		let timer;
+		const done = ( e ) => {
+			if ( e && e.target !== popup ) { return; } // ignore bubbling child media/anim events
+			popup.removeEventListener( 'transitionend', done );
+			popup.removeEventListener( 'animationend', done );
+			clearTimeout( timer );
+			popup.close();
 		};
+		popup.addEventListener( 'transitionend', done );
+		popup.addEventListener( 'animationend', done );
+		timer = setTimeout( done, ( dur * 1000 ) + 100 );
+	}
 
-		// Close last open popup with escape key.
-		document.addEventListener( 'keyup', ( event ) => {
-			// Bail if none open.
-			if ( ! open.length ) {
-				return;
+	// Cleanup that must run HOWEVER the dialog closed — programmatic close() OR
+	// native modal Esc (which fires 'close' with popup.open already false).
+	function onClose( popup ) {
+		if ( 'true' === popup.dataset.cookie ) { setCookie( popup ); }
+		stopMedia( popup );
+		popup.removeAttribute( 'closing' );
+		openStack.delete( popup );
+		const t = triggerFor.get( popup );        // bug #4 fix: restore focus to trigger
+		if ( t && typeof t.focus === 'function' ) { t.focus(); }
+		triggerFor.delete( popup );
+	}
+
+	// Bind affordances ONCE per popup (survives reopen).
+	popups.forEach( ( popup ) => {
+		// Native 'close' (modal Esc, programmatic close, dialog form submit) → single cleanup path.
+		popup.addEventListener( 'close', () => onClose( popup ) );
+
+		// Close buttons (animated request).
+		popup.querySelectorAll( '.mai-popup__close, .mai-popup-close, .mai-popup-close a' )
+			.forEach( ( el ) => el.addEventListener( 'click', ( e ) => { e.preventDefault(); requestClose( popup ); } ) );
+
+		// Light-dismiss: click on the ::backdrop (the dialog element itself) for modals, unless disabled.
+		if ( isModal( popup ) && 'false' !== popup.dataset.close ) {
+			popup.addEventListener( 'click', ( e ) => { if ( e.target === popup ) { requestClose( popup ); } } );
+		}
+	} );
+
+	// Esc for NON-modal popups only (modal Esc fires native 'close' above).
+	document.addEventListener( 'keydown', ( e ) => {
+		if ( 'Escape' !== e.key ) { return; }
+		document.querySelectorAll( '.mai-popup[open]:not([data-modal="true"])' ).forEach( requestClose );
+	} );
+
+	// Manual-link triggers.
+	triggers.forEach( ( t ) => t.addEventListener( 'click', ( e ) => {
+		e.preventDefault();
+		open( t.getAttribute( 'href' ), t );
+	} ) );
+
+	// Auto triggers.
+	popups.forEach( ( popup ) => {
+		switch ( popup.dataset.type ) {
+			case 'load': open( popup ); break;
+			case 'time': setTimeout( () => open( popup ), parseInt( popup.dataset.delay, 10 ) || 0 ); break;
+		}
+	} );
+
+	// Scroll-distance triggers.
+	const scrollers = [ ...popups ].filter( ( p ) => 'scroll' === p.dataset.type );
+	if ( scrollers.length ) { initScroll( scrollers, open ); }
+}
+
+// IntersectionObserver scroll trigger. Replaces the old scroll listener + rAF
+// debounce + manual getScrollPercentage with a 1px sentinel placed at the same
+// document offset the legacy main-relative percentage logic would have triggered at.
+function initScroll( popups, open ) {
+	// Same tracker as the legacy code: scroll progress is measured through <main>.
+	const tracker = document.querySelector( 'main' ) || document.body;
+
+	popups.forEach( ( popup ) => {
+		const distance = Math.min( 100, Math.max( 0, parseInt( popup.dataset.distance, 10 ) || 0 ) );
+
+		// 1px sentinel; fires when it enters the viewport from the bottom.
+		const sentinel = document.createElement( 'div' );
+		sentinel.setAttribute( 'aria-hidden', 'true' );
+		Object.assign( sentinel.style, { position: 'absolute', left: '0', width: '1px', height: '1px', pointerEvents: 'none' } );
+
+		// Reproduce the legacy trigger point: solving the old
+		// getScrollPercentage(main) >= distance for scroll position, the sentinel's
+		// document offset is main.offsetTop + (distance/100)*(viewport + main height).
+		const place = () => {
+			const top = Math.round( tracker.offsetTop + ( distance / 100 ) * ( window.innerHeight + tracker.offsetHeight ) );
+			sentinel.style.top = `${ top }px`;
+		};
+		place();
+		document.body.append( sentinel );
+
+		let io, ro;
+		io = new IntersectionObserver( ( entries ) => {
+			if ( entries.some( ( e ) => e.isIntersecting ) ) {
+				io.disconnect();
+				ro.disconnect();
+				sentinel.remove();
+				open( popup );
 			}
+		} );
+		// Keep the trigger point correct if the viewport or content height changes.
+		ro = new ResizeObserver( place );
+		io.observe( sentinel );
+		ro.observe( tracker );
+	} );
+}
 
-			if ( event.key === "Escape" || event.key === "Esc" ) {
-				closePopup( open.pop() );
-			}
-		});
-
-		/*************************
-		 * Sets up timed popups. *
-		 *************************/
-		if ( timed.length ) {
-			timed.forEach( ( popup ) => {
-				setTimeout( () => {
-					openPopup( popup );
-				}, parseInt( popup.dataset.delay ) );
-			});
-		}
-
-		/*************************
-		 * Sets up on load popups. *
-		 *************************/
-		 if ( loads.length ) {
-			loads.forEach( ( popup ) => {
-				openPopup( popup );
-			});
-		}
-
-		/*****************************
-		 * Sets up triggered popups. *
-		 *****************************/
-		 if ( triggers.length ) {
-			triggers.forEach( ( trigger ) => {
-				trigger.addEventListener( 'click', ( event ) => {
-					event.preventDefault();
-					openPopup( event.currentTarget.getAttribute( 'href' ), event );
-				}, false );
-			});
-		}
-
-		/***********************************
-		 * Sets up scroll distance popups. *
-		 ***********************************/
-		if ( scrolls.length ) {
-			/**
-			 * Debounce functions for better performance.
-			 * (c) 2021 Chris Ferdinandi, MIT License, https://gomakethings.com
-			 * @link https://vanillajstoolkit.com/helpers/debounce/
-			 * @param {Function} fn The function to debounce.
-			 */
-			const debounce = ( fn ) => {
-				// Setup a timer.
-				let timeout;
-
-				// Return a function to run debounced.
-				return () => {
-					// Setup the arguments.
-					let context = this;
-					let args    = arguments;
-
-					// If there's a timer, cancel it.
-					if ( timeout ) {
-						window.cancelAnimationFrame(timeout);
-					}
-
-					// Setup the new requestAnimationFrame().
-					timeout = window.requestAnimationFrame( () => {
-						fn.apply(context, args);
-					});
-				};
-			}
-
-			/**
-			 * Gets scroll percentage when based on the middle of the viewport.
-			 *
-			 * @param {Element} element
-			 *
-			 * @returns int
-			 */
-			const getScrollPercentage = ( element ) => {
-				if ( ! element ) {
-					return;
-				}
-
-				var windowHeight = window.innerHeight;
-				var scrollTop    = window.scrollY;
-				var elOffsetTop  = element.offsetTop;
-				var elHeight     = element.offsetHeight;
-				var distance     = scrollTop + windowHeight - elOffsetTop;
-				var percentage   = Math.round( distance / ((windowHeight + elHeight) / 100) );
-
-				// Restrict the range to between 0 and 100.
-				return Math.min(100, Math.max(0, percentage));
-			};
-
-			// Set up scroll data.
-			var tracker    = document.querySelector( 'main' );
-			var scrollData = [];
-
-			// Add the data.
-			scrolls.forEach( ( popup ) => {
-				scrollData.push(
-					{
-						distance: parseInt( popup.dataset.distance ),
-						element: popup,
-					}
-				);
-			});
-
-			/**
-			 * Adds scroll listener to trigger based on scroll percentage.
-			 */
-			window.addEventListener( 'scroll', debounce( () => {
-				// Bail if scroll popups are empty.
-				if ( ! scrollData.length ) {
-					return false;
-				}
-
-				// Get scroll element.
-				var scrolled = getScrollPercentage( tracker );
-
-				// Check scroll distance of each popup.
-				scrollData.forEach( (data, index) => {
-					if ( scrolled < data.distance ) {
-						return;
-					}
-
-					// Remove popup from data so it doesn't fire again.
-					scrollData.splice(index, 1);
-
-					// Launch popup.
-					openPopup( data.element );
-				});
-			}));
-		}
-	});
-} )();
+if ( document.readyState !== 'loading' ) { init(); }
+else { document.addEventListener( 'DOMContentLoaded', init ); }
