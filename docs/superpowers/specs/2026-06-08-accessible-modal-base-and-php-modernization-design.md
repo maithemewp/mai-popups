@@ -27,7 +27,7 @@ mai-popups renders popups as a native `<dialog>` but opens them with `.show()` (
 - **PHP 8.2 floor** (`Requires PHP: 8.2` in header).
 - **ACF block unchanged** — `blocks/mai-popup/block.php` field group and `acf/mai-popup` block name stay; only its render bridge points at the new code.
 - **Anchor `id` contract is stable** — the `#mai-popup-xxxx` id lives in users' link/button content and must keep working as a trigger. (HTML/CSS *classes/structure* may change — user confirmed no site-specific custom CSS is expected — but this id contract holds.)
-- **Public API preserved via shims** — keep `mai_do_popup()` and `maipopups_get_defaults()` as thin deprecated wrappers, and preserve the `mai_popup_default_args` filter.
+- **Public API preserved** — keep `mai_do_popup()` and `maipopups_get_defaults()` as supported, first-class procedural wrappers (template tags; NOT deprecated) over the new classes, and preserve the `mai_popup_default_args` filter.
 - **Reduced motion** — honor `prefers-reduced-motion`.
 
 ## 4. Workstream A — Accessible modal base (frontend)
@@ -85,7 +85,7 @@ Current `Mai_Popup` does sanitize+model, markup, asset injection, cookie/repeat,
 Typed properties, constructor property promotion, `readonly` on the `Config`/value objects, native `enum`s (above), `match` over the trigger/position switches, named args. Strict types where practical.
 
 ### 5.4 Backward compatibility
-- `mai_do_popup($args, $content)` and `maipopups_get_defaults()` remain as thin **deprecated** global wrappers delegating to the new classes. Preserve the `mai_popup_default_args` filter exactly.
+- `mai_do_popup($args, $content)` and `maipopups_get_defaults()` remain as **supported procedural wrappers** (template tags, not deprecated) delegating to the new classes. Preserve the `mai_popup_default_args` filter exactly.
 - ACF block name (`acf/mai-popup`), field keys/names, and saved data are untouched. `block.php`'s render callback delegates to `Renderer`.
 
 ## 6. Workstream C — Tests & tooling

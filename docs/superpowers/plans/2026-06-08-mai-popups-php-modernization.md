@@ -945,14 +945,19 @@ use Mai\Popups\Defaults;
 use Mai\Popups\Popup;
 
 /**
- * @deprecated Use Mai\Popups\Popup. Kept for backward compatibility.
+ * Render a popup. Public procedural API (template tag) wrapping Mai\Popups\Popup.
+ *
+ * @param array<string,mixed> $args    Popup args. See Mai\Popups\Defaults::get().
+ * @param string              $content Popup inner content.
  */
-function mai_do_popup( array $args, string $content = '' ): void {
+function mai_do_popup( array $args = [], string $content = '' ): void {
     ( new Popup( Config::fromArray( $args ), $content ) )->render();
 }
 
 /**
- * @deprecated Use Mai\Popups\Defaults::get().
+ * Get the filterable popup default args. Public procedural API for Mai\Popups\Defaults.
+ *
+ * @return array<string,mixed>
  */
 function maipopups_get_defaults(): array {
     return Defaults::get();
