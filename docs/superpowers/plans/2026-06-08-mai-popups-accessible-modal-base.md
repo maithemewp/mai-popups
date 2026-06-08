@@ -252,16 +252,25 @@ Replaces the old `scroll` listener + rAF debounce + manual `getScrollPercentage`
 
 ```js
 function initScroll( popups, open ) {
+	// Same tracker as the legacy code: scroll progress is measured through <main>.
+	const tracker = document.querySelector( 'main' ) || document.body;
+
 	popups.forEach( ( popup ) => {
 		const distance = Math.min( 100, Math.max( 0, parseInt( popup.dataset.distance, 10 ) || 0 ) );
 
-		// A 1px sentinel placed at `distance%` of the page height; fire when it enters the viewport.
+		// 1px sentinel; fires when it enters the viewport from the bottom.
 		const sentinel = document.createElement( 'div' );
 		sentinel.setAttribute( 'aria-hidden', 'true' );
 		Object.assign( sentinel.style, { position: 'absolute', left: '0', width: '1px', height: '1px', pointerEvents: 'none' } );
 
-		// Absolute, no positioned ancestor → top is measured from the document origin (scrolls with the page).
-		const place = () => { sentinel.style.top = `${ Math.round( ( distance / 100 ) * document.documentElement.scrollHeight ) }px`; };
+		// Reproduce the legacy trigger point exactly: solving the old
+		// getScrollPercentage(main) >= distance for scroll position, the sentinel's
+		// document offset is main.offsetTop + (distance/100)*(viewport + main height).
+		// (offsetTop matches the legacy element.offsetTop used before.)
+		const place = () => {
+			const top = Math.round( tracker.offsetTop + ( distance / 100 ) * ( window.innerHeight + tracker.offsetHeight ) );
+			sentinel.style.top = `${ top }px`;
+		};
 		place();
 		document.body.append( sentinel );
 
@@ -275,13 +284,13 @@ function initScroll( popups, open ) {
 		} );
 		io.observe( sentinel );
 
-		// Keep the trigger depth correct if content height changes (lazy images, etc.).
+		// Keep the trigger point correct if the viewport or content height changes.
 		const ro = new ResizeObserver( place );
-		ro.observe( document.documentElement );
+		ro.observe( tracker );
 	} );
 }
 ```
-> `IntersectionObserver` + `ResizeObserver` are baseline-supported in all evergreen browsers. This removes the debounce helper and the `main`-relative percentage math entirely.
+> `IntersectionObserver` + `ResizeObserver` are baseline-supported in all evergreen browsers. This fires at the **same scroll position as the old `main`-relative percentage logic**, but with no `scroll` listener and no per-frame math. (Sentinel appended to `document.body`; if a theme makes an ancestor positioned, the `offsetTop` reference matches the legacy `offsetTop` it replaces.)
 
 - [ ] **Step 3: Build**
 
