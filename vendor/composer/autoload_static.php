@@ -10,13 +10,30 @@ class ComposerStaticInitdca8d1b624a017eb229ff93df3bcc0b8
         '256558b1ddf2fa4366ea7d7602798dd1' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p5.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'M' =>
+        array (
+            'Mai\\Popups\\' => 11,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Mai\\Popups\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
+    );
+
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Mai\\Popups\\Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdca8d1b624a017eb229ff93df3bcc0b8::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdca8d1b624a017eb229ff93df3bcc0b8::$prefixDirsPsr4;
             $loader->classMap = ComposerStaticInitdca8d1b624a017eb229ff93df3bcc0b8::$classMap;
 
         }, null, ClassLoader::class);
