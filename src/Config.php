@@ -32,20 +32,20 @@ final readonly class Config {
 
         // Mirror legacy truthiness: an empty position string yields no Position
         // (legacy emitted position attrs only inside `if ( $this->args['position'] )`).
-        $pos      = \esc_html( $args['position'] );
+        $pos      = \sanitize_text_field( $args['position'] );
         $position = $pos ? Position::fromString( $pos ) : null;
 
         return new self(
             id:           \sanitize_key( $args['id'] ),
-            class:        \esc_attr( $args['class'] ),
+            class:        \sanitize_text_field( $args['class'] ),
             trigger:      Trigger::tryFromString( \sanitize_key( $args['trigger'] ) ),
             animate:      Animation::tryFromString( \sanitize_key( $args['animate'] ) ),
             distance:     self::float( $args['distance'] ),
             delay:        self::float( $args['delay'] ),
             position:     $position,
-            width:        trim( \esc_html( $args['width'] ) ),
+            width:        trim( \sanitize_text_field( $args['width'] ) ),
             padding:      \sanitize_key( $args['padding'] ),
-            repeat:       trim( \esc_html( $args['repeat'] ) ),
+            repeat:       trim( \sanitize_text_field( $args['repeat'] ) ),
             repeatRoles:  array_map( '\sanitize_key', (array) $args['repeat_roles'] ),
             disableClose: \rest_sanitize_boolean( self::boolish( $args['disable_close'] ) ),
             background:   \sanitize_key( $args['background'] ),

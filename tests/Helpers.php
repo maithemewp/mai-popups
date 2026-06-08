@@ -3,8 +3,13 @@
 use Brain\Monkey\Functions;
 
 function maipopups_stub_wp_helpers(): void {
-    foreach ( [ 'esc_attr', 'esc_html', 'sanitize_text_field', 'sanitize_key', '__' ] as $fn ) {
+    foreach ( [ 'sanitize_text_field', 'sanitize_key', '__' ] as $fn ) {
         Functions\when( $fn )->returnArg( 1 );
+    }
+    // Faithful escaping stubs so a missing escape at the output sink is caught.
+    // WP's esc_attr/esc_html encode & < > " ' — htmlspecialchars(ENT_QUOTES) matches.
+    foreach ( [ 'esc_attr', 'esc_html' ] as $fn ) {
+        Functions\when( $fn )->alias( fn ( $arg ) => htmlspecialchars( (string) $arg, ENT_QUOTES ) );
     }
     Functions\when( 'rest_sanitize_boolean' )->alias( function ( $value ) {
         if ( is_string( $value ) ) {

@@ -23,6 +23,8 @@ final class Renderer {
             'id'           => $id,
             'class'        => 'mai-popup',
             'style'        => '',
+            'tabindex'     => '-1',
+            'aria-label'   => \__( 'Popup', 'mai-popups' ),
             'data-type'    => $config->trigger->value,
             'data-animate' => $config->animate->value,
             'data-close'   => $config->disableClose ? 'false' : 'true',
@@ -93,7 +95,7 @@ final class Renderer {
                 continue;
             }
 
-            $atts .= sprintf( ' %s="%s"', $att, trim( (string) $value ) );
+            $atts .= sprintf( ' %s="%s"', $att, \esc_attr( trim( (string) $value ) ) );
         }
 
         // Set tag.
@@ -119,6 +121,6 @@ final class Renderer {
         $text  = \__( 'Close', 'mai-popups' );
         $class = 'mai-popup__close';
 
-        return sprintf( '<button type="button" class="%s" aria-label="%s"></button>', $class, $text );
+        return sprintf( '<button type="button" class="%s" aria-label="%s"></button>', \esc_attr( $class ), \esc_attr( $text ) );
     }
 }
