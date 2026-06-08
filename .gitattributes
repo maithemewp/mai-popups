@@ -1,0 +1,10 @@
+/tests             export-ignore
+/docs              export-ignore
+/src/js            export-ignore
+/src/css           export-ignore
+/node_modules      export-ignore
+phpstan.neon       export-ignore
+package.json       export-ignore
+package-lock.json  export-ignore
+.gitignore         export-ignore
+.gitattributes     export-ignore

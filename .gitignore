@@ -3,3 +3,7 @@
 .AppleDouble
 .LSOverride
 node_modules
+/vendor/*
+!/vendor/autoload.php
+!/vendor/composer/
+!/vendor/yahnis-elsts/

@@ -1,5 +1,31 @@
 {
     "require": {
         "yahnis-elsts/plugin-update-checker": "^5"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.5",
+        "brain/monkey": "^2.6",
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^2.1",
+        "php-stubs/wordpress-stubs": "^6.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mai\\Popups\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mai\\Popups\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "stan": "phpstan analyse"
     }
 }
