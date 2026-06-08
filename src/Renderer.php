@@ -7,7 +7,6 @@ use Mai\Popups\Enum\Trigger;
 final class Renderer {
     public function __construct(
         private ?Cookies $cookies = null,
-        private ?Assets $assets = null,
     ) {}
 
     /**
@@ -102,7 +101,6 @@ final class Renderer {
 
         // Build HTML.
         $html .= sprintf( '<%s%s>', $tag, $atts );
-            $html .= $this->assets?->inlineHead( $config ) ?? '';
             $html .= $this->closeButton( $config );
             $html .= $content;
         $html .= sprintf( '</%s>', $tag );

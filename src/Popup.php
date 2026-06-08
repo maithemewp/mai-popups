@@ -12,7 +12,7 @@ final class Popup {
         private ?Renderer $renderer = null,
         private ?Conditions $conditions = null,
     ) {
-        $this->renderer   ??= new Renderer( new Cookies(), new Assets() );
+        $this->renderer   ??= new Renderer( new Cookies() );
         $this->conditions ??= new Conditions();
     }
 
@@ -20,6 +20,10 @@ final class Popup {
         $id = ltrim( $this->config->id, '#' );
         if ( isset( self::$loaded[ $id ] ) ) { return; }
         if ( ! $this->conditions->passes( $this->config ) ) { return; }
+
+        if ( ! $this->config->preview ) {
+            Assets::enqueue();
+        }
 
         $output = fn () => print $this->renderer->render( $this->config, $this->content );
 

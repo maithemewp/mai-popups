@@ -140,6 +140,7 @@ final class Mai_Popups_Plugin {
 	 */
 	public function hooks() {
 		add_action( 'plugins_loaded', [ $this, 'updater' ] );
+		add_action( 'wp_enqueue_scripts', [ \Mai\Popups\Assets::class, 'register' ] );
 	}
 
 	/**
