@@ -12,3 +12,30 @@ function maipopups_stub_wp_helpers(): void {
     );
     Functions\when( 'apply_filters' )->returnArg( 2 );
 }
+
+/**
+ * Asserts that $actual matches a stored golden snapshot.
+ *
+ * On first run (no snapshot file yet) the baseline is recorded and the
+ * assertion trivially passes. On subsequent runs the actual output is
+ * compared byte-for-byte against the recorded baseline.
+ *
+ * Reused by later tasks to prove the new Renderer produces byte-identical
+ * output to the legacy Mai_Popup class.
+ */
+function maipopups_assert_golden( string $name, string $actual ): void {
+    $dir = __DIR__ . '/__snapshots__';
+
+    if ( ! is_dir( $dir ) ) {
+        mkdir( $dir, 0777, true );
+    }
+
+    $file = "$dir/$name.html";
+
+    // First run records the baseline.
+    if ( ! file_exists( $file ) ) {
+        file_put_contents( $file, $actual );
+    }
+
+    expect( $actual )->toBe( file_get_contents( $file ) );
+}
