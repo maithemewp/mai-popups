@@ -456,13 +456,15 @@ public static function generateAnchorId(): string {
     return uniqid( '#mai-popup-' );
 }
 ```
-In `blocks/mai-popup/block.php`, change `mai_prepare_popup_id_field` so a **duplicated** block (same value as another instance on the screen) regenerates. Practical fix: when ACF reports this is a new/duplicated block context, force regeneration; otherwise keep the saved value. Concretely, regenerate when the value is empty OR when `acf_is_block_editor()` first renders a clone (detected via the block's `data` lacking a persisted `_id` for the field). Minimum viable fix that resolves the reported case: also regenerate on the editor `prepare` when the request is an ACF block preview AJAX and the value matches another posted block id. Document the chosen heuristic inline and verify in the editor smoke test (#5).
-> Note: This is the one editor-behavior fix in Plan 2; verify manually (Task 8) that duplicating a popup block yields a new `#mai-popup-…`.
+**Primary fix — editor-side (most likely to work).** The server can't reliably tell a fresh duplicate from a re-render, so detect duplication in the editor. Add a small editor script (new wp-scripts entry `src/js/editor.js`, enqueued on `enqueue_block_editor_assets`) that, on block mount/selection, checks whether this popup block's `id` value matches another popup block currently in the editor; if so, assign a fresh `generateAnchorId()` via ACF's JS field API (`acf.getField`/field `val()` for the `mai_popup_link` field on this block). Keep `mai_prepare_popup_id_field` server-side only as the empty-value generator (unchanged behavior) — it's the fallback for brand-new blocks.
 
-- [ ] **Step 4: Run to verify pass**
+> ⚠️ **Uncertainty flagged (user is skeptical, 2026-06-08):** ACF-block field interception in the editor is fiddly. Order of attack: (1) editor-JS collision-detect + regenerate; (2) if ACF's JS field timing fights us, fall back to regenerating when ACF's block `id`/clientId is new; (3) if neither lands cleanly within reasonable effort, **ship `generateAnchorId()` + document the manual workaround** ("clear the Link field to get a new anchor") and **leave #5 open** rather than over-engineer. Decide at this step based on what actually works in the editor.
+
+- [ ] **Step 4: Run to verify pass + manual editor check**
 
 Run: `vendor/bin/pest tests/Unit/AnchorIdTest.php`
-Expected: PASS (the generator test). The duplication heuristic is verified in Task 8.
+Expected: PASS (the generator test).
+Then **manually** (this is the real test): duplicate a popup block in the editor and confirm the new block gets a different `#mai-popup-…`. If it doesn't and option (3) above is taken, note the limitation in the commit + keep #5 open.
 
 - [ ] **Step 5: Commit**
 
