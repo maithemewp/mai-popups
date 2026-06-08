@@ -1,9 +1,6 @@
 .mai-popup {
 	--mai-popup-spacing: 16px;
 	--mai-popup-animation-duration: 500ms;
-}
-
-.mai-popup {
 	position: fixed;
 	top: var(--mai-popup-spacing);
 	right: var(--mai-popup-spacing);
@@ -127,12 +124,10 @@ html:has(dialog.mai-popup:modal[open]) {
 /* animations */
 
 .mai-popup[open] {
-	-webkit-animation: var(--mai-popup-animation-open, maipopup-fade-in var(--mai-popup-animation-duration) forwards);
 	animation: var(--mai-popup-animation-open, maipopup-fade-in var(--mai-popup-animation-duration) forwards);
 }
 
 .mai-popup[closing] {
-	-webkit-animation: var(--mai-popup-animation-close, maipopup-fade-out var(--mai-popup-animation-duration) forwards);
 	animation: var(--mai-popup-animation-close, maipopup-fade-out var(--mai-popup-animation-duration) forwards);
 }
 
@@ -156,19 +151,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	to   { opacity: 0; }
 }
 
-@-webkit-keyframes maipopup-fade-in {
-
-	0% {
-		transform: scale(0.9);
-		opacity: 0;
-	}
-
-	100% {
-		transform: scale(1);
-		opacity: 1;
-	}
-}
-
 @keyframes maipopup-fade-in {
 
 	0% {
@@ -179,19 +161,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	100% {
 		transform: scale(1);
 		opacity: 1;
-	}
-}
-
-@-webkit-keyframes maipopup-fade-out {
-
-	0% {
-		transform: scale(1);
-		opacity: 1;
-	}
-
-	100% {
-		transform: scale(0.9);
-		opacity: 0;
 	}
 }
 
@@ -208,19 +177,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	}
 }
 
-@-webkit-keyframes maipopup-slide-up {
-
-	0% {
-		transform: translateY(50%);
-		opacity: 0;
-	}
-
-	100% {
-		transform: translateY(0%);
-		opacity: 1;
-	}
-}
-
 @keyframes maipopup-slide-up {
 
 	0% {
@@ -231,19 +187,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	100% {
 		transform: translateY(0%);
 		opacity: 1;
-	}
-}
-
-@-webkit-keyframes maipopup-slide-downout {
-
-	0% {
-		transform: translateY(0%);
-		opacity: 1;
-	}
-
-	100% {
-		transform: translateY(50%);
-		opacity: 0;
 	}
 }
 
@@ -260,19 +203,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	}
 }
 
-@-webkit-keyframes maipopup-slide-down {
-
-	0% {
-		transform: translateY(-50%);
-		opacity: 0;
-	}
-
-	100% {
-		transform: translateY(0%);
-		opacity: 1;
-	}
-}
-
 @keyframes maipopup-slide-down {
 
 	0% {
@@ -283,19 +213,6 @@ html:has(dialog.mai-popup:modal[open]) {
 	100% {
 		transform: translateY(0%);
 		opacity: 1;
-	}
-}
-
-@-webkit-keyframes maipopup-slide-upout {
-
-	0% {
-		transform: translateY(0%);
-		opacity: 1;
-	}
-
-	100% {
-		transform: translateY(-50%);
-		opacity: 0;
 	}
 }
 
