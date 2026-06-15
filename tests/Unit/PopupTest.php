@@ -70,15 +70,18 @@ test( 'footer timing: in the footer it prints immediately', function () {
     expect( $html )->toContain( '<dialog' );
 } );
 
-test( 'footer timing: outside the footer it defers via add_action(wp_footer)', function () {
+test( 'footer timing: outside the footer it defers BOTH the enqueue and the markup to wp_footer', function () {
     Functions\when( 'doing_action' )->justReturn( false ); // isFooter() === false
     Functions\when( 'did_action' )->justReturn( false );
 
-    $deferred = null;
+    // The asset enqueue must also be deferred to wp_footer (not run synchronously):
+    // when content renders via mai_get_processed_content()/do_blocks, a synchronous
+    // enqueue is wiped before footer scripts print, so the popup JS never loads.
+    $calls = [];
     Functions\expect( 'add_action' )
-        ->once()
-        ->andReturnUsing( function ( $hook, $cb ) use ( &$deferred ) {
-            $deferred = $hook;
+        ->twice()
+        ->andReturnUsing( function ( $hook, $cb ) use ( &$calls ) {
+            $calls[] = [ 'hook' => $hook, 'cb' => $cb ];
             return true;
         } );
 
@@ -87,7 +90,10 @@ test( 'footer timing: outside the footer it defers via add_action(wp_footer)', f
         ( new Popup( Config::fromArray( [ 'id' => 'footer-later', 'trigger' => 'load' ] ), '<p>x</p>' ) )->render();
     } );
 
-    expect( $deferred )->toBe( 'wp_footer' );
+    // Both deferrals target wp_footer; enqueue is registered first, then the markup.
+    expect( array_column( $calls, 'hook' ) )->toBe( [ 'wp_footer', 'wp_footer' ] );
+    expect( $calls[0]['cb'] )->toBe( [ \Mai\Popups\Assets::class, 'enqueue' ] );
+    expect( $calls[1]['cb'] )->toBeInstanceOf( Closure::class );
     expect( $html )->toBe( '' );
 } );
 
