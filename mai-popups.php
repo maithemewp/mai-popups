@@ -5,6 +5,8 @@
  * Plugin URI:      https://bizbudding.com/mai-theme/
  * Description:     A lightweight and flexible popup, slideup, notice, and hello bar block.
  * Version:         0.6.0-beta.5
+ * Requires at least: 6.9
+ * Requires PHP:    8.2
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
