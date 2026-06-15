@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Plugin Name:     Mai Popups
- * Plugin URI:      https://bizbudding.com/mai-theme/
- * Description:     A lightweight and flexible popup, slideup, notice, and hello bar block.
- * Version:         0.6.0-beta.5
- * Requires at least: 6.9
- * Requires PHP:    8.2
+ * Plugin Name:        Mai Popups
+ * Plugin URI:         https://bizbudding.com/mai-theme/
+ * Description:        A lightweight and flexible popup, slideup, notice, and hello bar block.
+ * Version:            0.6.0-beta.5
+ * Requires at least:  6.9
+ * Requires PHP:       8.2
  *
- * Author:          BizBudding
- * Author URI:      https://bizbudding.com
+ * Author:             BizBudding
+ * Author URI:         https://bizbudding.com
  */
 
 // Exit if accessed directly.
