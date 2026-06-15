@@ -11,15 +11,32 @@
 	max-width: var(--mai-popup-max-width, 100%);
 	max-height: calc(100svh - (var(--mai-popup-spacing) * 2));
 	margin: var(--mai-popup-margin, auto);
-	padding: var(--mai-popup-padding, 0);
-	overflow-x: hidden;
-	overflow-y: auto;
-	overscroll-behavior: contain;
+	/* The dialog is the non-scrolling frame: padding + scrolling live on
+	   .mai-popup__content so the close button (absolute to this frame) stays
+	   pinned to the corner and never scrolls away (#7). padding:0 overrides the
+	   UA default `dialog { padding: 1em }` so the content wrapper fills the frame
+	   and its scrollbar sits at the dialog edge, not inside a phantom 1em. */
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 	background: var(--mai-popup-background, white);
 	border: 0;
 	border-radius: var(--mai-popup-border-radius, var(--border-radius, 3px));
 	box-shadow: var(--mai-popup-box-shadow, 0 0 24px 8px rgba(0, 0, 0, 0.1));
 	opacity: 0.01;
+}
+
+/* content wrapper — the scroller; holds the popup padding */
+
+.mai-popup__content {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	/* Padding comes from the has-*-padding class the Renderer puts on this element. */
 }
 
 /* Lock the page only while a MODAL dialog is open. Bars/slide-ins are exempt via :modal. */
@@ -71,16 +88,19 @@ html:has(dialog.mai-popup:modal[open]) {
 .mai-popup__close,
 .mai-popup__close:hover,
 .mai-popup__close:focus {
-	position: sticky;
+	/* Absolute to the non-scrolling frame, so it hugs the true corner regardless
+	   of the popup's padding (or an inner Group's padding) and stays put while
+	   .mai-popup__content scrolls beneath it (#7). */
+	position: absolute;
 	top: 0.25em;
+	right: 0.25em;
 	z-index: 9;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: var(--mai-popup-close-size, 44px);
 	height: var(--mai-popup-close-size, 44px);
-	/* Pin to the top-right and overlay content; the negative bottom margin reserves no vertical space so content still starts at the top (#7). */
-	margin: 0 0.25em calc(-1 * var(--mai-popup-close-size, 44px)) auto;
+	margin: 0;
 	padding: var(--mai-popup-close-padding, 10px);
 	color: var(--mai-popup-close-color, currentColor);
 	background: var(--mai-popup-close-background, transparent);

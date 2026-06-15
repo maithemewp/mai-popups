@@ -35,9 +35,12 @@ final class Renderer {
             $args['class'] .= ' ' . $config->class;
         }
 
-        // Add padding class.
+        // The padding class goes on the content wrapper (the scroller), not the
+        // dialog frame, so the scrollbar sits at the dialog edge and the padding
+        // can't push the absolutely-positioned close button off the corner.
+        $contentClass = 'mai-popup__content';
         if ( $config->padding ) {
-            $args['class'] .= sprintf( ' has-%s-padding', $config->padding );
+            $contentClass .= sprintf( ' has-%s-padding', $config->padding );
         }
 
         // Add background color.
@@ -104,7 +107,7 @@ final class Renderer {
         // Build HTML.
         $html .= sprintf( '<%s%s>', $tag, $atts );
             $html .= $this->closeButton( $config );
-            $html .= $content;
+            $html .= sprintf( '<div class="%s">%s</div>', \esc_attr( $contentClass ), $content );
         $html .= sprintf( '</%s>', $tag );
 
         return $html;
