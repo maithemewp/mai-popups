@@ -16,7 +16,7 @@ test( 'args() maps each ACF field into the right Config-arg slot', function () {
         'delay'         => '4',
         'width'         => '600px',
         'padding'       => 'lg',
-        'repeat'        => '7 days',
+        'repeat'        => '7',
         'repeat_roles'  => [ 'administrator', 'editor' ],
         'disable_close' => true,
     ];
@@ -33,7 +33,7 @@ test( 'args() maps each ACF field into the right Config-arg slot', function () {
     expect( $args['delay'] )->toBe( '4' );
     expect( $args['width'] )->toBe( '600px' );
     expect( $args['padding'] )->toBe( 'lg' );
-    expect( $args['repeat'] )->toBe( '7 days' );
+    expect( $args['repeat'] )->toBe( '7' );
     expect( $args['repeat_roles'] )->toBe( [ 'administrator', 'editor' ] );
     expect( $args['disable_close'] )->toBeTrue();
 } );

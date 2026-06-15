@@ -12,7 +12,7 @@ beforeEach( function () {
 } );
 
 test( 'cookie popup adds data-cookie and data-expire', function () {
-    $config = Config::fromArray( [ 'trigger' => 'time', 'repeat' => '7 days', 'delay' => '3' ] );
+    $config = Config::fromArray( [ 'trigger' => 'time', 'repeat' => '7', 'delay' => '3' ] );
     $html   = ( new Renderer( new Cookies() ) )->render( $config, '<p>x</p>' );
     expect( $html )->toContain( 'data-cookie="true"' );
     expect( $html )->toContain( 'data-expire="1893456000"' );
