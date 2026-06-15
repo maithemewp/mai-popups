@@ -87,7 +87,9 @@ html:has(dialog.mai-popup:modal[open]) {
 
 .mai-popup__close,
 .mai-popup__close:hover,
-.mai-popup__close:focus {
+.mai-popup__close:focus,
+.mai-popup__close:focus-visible,
+.mai-popup__close:active {
 	/* Absolute to the non-scrolling frame, so it hugs the true corner regardless
 	   of the popup's padding (or an inner Group's padding) and stays put while
 	   .mai-popup__content scrolls beneath it (#7). */
@@ -106,6 +108,9 @@ html:has(dialog.mai-popup:modal[open]) {
 	background: var(--mai-popup-close-background, transparent);
 	border: 0;
 	border-radius: 50%;
+	/* Force no transform so the close button never picks up the theme's button
+	   hover/focus lift. The X icon's own scale is on ::before, so it still animates. */
+	transform: none !important;
 }
 
 .mai-popup__close::before {
