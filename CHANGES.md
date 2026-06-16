@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 (TBD)
+## 0.6.0 (6/16/26)
 * Added: Accessible modal popups using the native `<dialog>` element (native focus trap, inert background, Escape to close, and `::backdrop` for centered modals).
 * Added: New "Disable closing" setting to disable the close button and disable clicking the overlay to close. This requires a link or button with `mai-popup-close` class in order to close the popup.
 * Added: PHP test suite (Pest) and static analysis (PHPStan); modernized to PHP 8.2 with namespaced classes.
@@ -9,6 +9,7 @@
 * Changed: Hardened popup attribute output escaping; the repeat cookie now uses the Secure flag over HTTPS.
 * Changed: Body scroll is now locked via CSS only while a modal popup is open.
 * Changed: Always load popups, even if cookied, so manual links work.
+* Changed: The Repeat setting now accepts a plain number (treated as days) in addition to `strtotime()` values like "2 weeks", and shows a placeholder with the default.
 * Changed: Removed unecessary `render_block` filter.
 * Fixed: Multiple open popups and Escape-to-close no longer corrupt the open-popup tracking.
 * Fixed: Repeat/cookie expiration now sets a valid expiry date (it was previously producing an invalid date).

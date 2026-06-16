@@ -1,33 +1,104 @@
 # Mai Popups
-A lightweight and flexible popup, slideup, notice, and hello bar block. Works best with Mai Theme, but should work in all block-based themes. Requires ACF Pro v6+.
+
+A lightweight and flexible popup, slide-up, notice, and hello-bar block, built on the native `<dialog>` element. Works best with Mai Theme, but should work in any block-based theme.
+
+Centered popups render as accessible modals (native focus trap, inert background, `Esc` to close, and a dimmed `::backdrop`). Positioned popups (top/bottom/corner) render as non-modal bars and slide-ins.
+
+## Requirements
+
+- WordPress 6.9+
+- PHP 8.2+
+- ACF Pro 6+
 
 ## Usage
+
 ### Mai Popup block
-Add Mai Popup block to any post/page and configure the settings. Create your popup content using any blocks.
+
+Add the **Mai Popup** block to any post or page and build the popup content with any blocks. Configure behavior (trigger, animation, position, width, padding, repeat, colors, etc.) in the block settings sidebar.
+
+### Open a popup from a link
+
+Give the popup an **id** (it must start with `mai-popup-`, e.g. `mai-popup-newsletter`) and link to it from anywhere:
+
+```html
+<a href="#mai-popup-newsletter">Open the newsletter popup</a>
+```
+
+Any link whose `href` starts with `#mai-popup-` opens the matching popup. Manually opening a popup this way never sets the repeat cookie, so it always works.
+
+### Disable closing
+
+The "Disable closing" setting removes the close button and disables click-outside-to-close. To let users close it, place a link or button with the class `mai-popup-close` inside the popup:
+
+```html
+<a class="mai-popup-close" href="#">No thanks</a>
+```
 
 ### Helper function
-Developers can add any popup via `mai_do_popup( $args, $content )` function. Add this function anywhere and it will automatically add the popup to the footer.
 
-```
+Developers can render a popup anywhere with `mai_do_popup( $args, $content )`. It automatically prints the popup in the footer.
+
+```php
 mai_do_popup( $args, $content );
 ```
 
-**$args**
+**`$args`**
 
-```
+```php
 $args = [
-	'id'        => '', // The HTML id when trigger is manual. Must start with `mai-popup-`.
-	'trigger'   => 'manual', // The popup trigger. Accepts 'scroll', 'timed', 'load', and 'manual'.
-	'animate'   => 'fade', // The type of animation. Accepts 'fade', 'up', and 'down'.
-	'distance'  => '50', // The percentage distance of scroll before triggering popup when the trigger is 'scroll'.
-	'delay'     => '3', // The time in seconds before displaying the popup when using 'timed' type. Uses float so it can be decimals.
-	'position'  => 'center center', // The position of popup, with space-separated values. First value is vertical, second value is horizontal. Accepts 'start', 'center', and 'end'.
-	'width'     => '', // The max-width of the popup. Accepts any CSS value.
-	'repeat'    => '7 days', // The time before showing the popup to the same user. Sets a cookie with the expiration time. Accepts any value that `strtotime()` accepts.
-	'condition' => true, // A bool value or callable function to determine whether to display the popup. This could check for logged in, member, etc.
+    'id'            => '',              // HTML id; also the manual-open anchor target. Must start with `mai-popup-`.
+    'class'         => '',              // Extra CSS class(es) on the popup.
+    'trigger'       => 'manual',        // 'manual', 'load', 'scroll', or 'time'.
+    'animate'       => 'fade',          // 'fade', 'up', or 'down'.
+    'distance'      => '50',            // Scroll percentage before triggering (trigger = 'scroll').
+    'delay'         => '3',             // Seconds before showing (trigger = 'time'). Accepts decimals.
+    'position'      => 'center center', // "vertical horizontal", each 'start'|'center'|'end'. "center center" = modal.
+    'width'         => '',              // Max-width. Any CSS value; a bare number is treated as px.
+    'padding'       => 'xl',            // '', 'sm', 'md', 'lg', 'xl', 'xxl', or 'xxxl'.
+    'repeat'        => '7 days',        // How long before showing again to the same user (sets a cookie).
+                                        // Accepts anything strtotime() understands ("2 weeks") or a plain
+                                        // number of days. Use 0 to always show.
+    'repeat_roles'  => [],              // Role slugs that bypass the repeat cookie (always see the popup).
+    'disable_close' => false,           // Remove the close button + click-outside close. Use .mai-popup-close to close.
+    'background'    => '',              // Background color slug (theme palette).
+    'color'         => '',              // Text color slug (theme palette).
+    'condition'     => true,            // Bool or callable; return false to suppress (e.g. logged-in checks).
 ];
 ```
 
-**$content**
+**`$content`**
 
-Any HTML string.
+Any HTML string — the popup's inner content.
+
+### Defaults filter
+
+All defaults above can be filtered:
+
+```php
+/**
+ * Change the default repeat duration for all popups.
+ *
+ * @param array $defaults The default popup args.
+ *
+ * @return array
+ */
+add_filter( 'mai_popup_default_args', function( $defaults ) {
+    $defaults['repeat'] = '30 days';
+
+    return $defaults;
+} );
+```
+
+## Development
+
+Built with `@wordpress/scripts`. Source lives in `src/` and is compiled to `build/`.
+
+```bash
+npm install
+npm run build      # production build
+npm run start      # watch mode
+
+composer install
+composer test      # Pest unit tests
+composer stan      # PHPStan static analysis
+```
