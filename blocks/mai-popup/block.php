@@ -149,14 +149,12 @@ function mai_register_popup_field_group() {
 				],
 				[
 					'label'             => __( 'Repeat', 'mai-popups' ),
-					'instructions'      => __( 'The number of days before this popup shows again for the same user. Use 0 to always show, but beware that this may frustrate your website users.', 'mai-popups' ),
+					'instructions'      => __( 'How long before this popup shows again for the same user. Accepts any value PHP\'s strtotime() understands — e.g. "7 days", "2 weeks", "12 hours". Use 0 to always show, but beware that this may frustrate your website users.', 'mai-popups' ),
 					'key'               => 'mai_popup_repeat',
 					'name'              => 'repeat',
-					'type'              => 'number',
+					'type'              => 'text',
 					'default_value'     => $defaults['repeat'],
-					'min'               => 0,
-					'step'              => 1,
-					'append'            => __( 'days', 'mai-popups' ),
+					'placeholder'       => $defaults['repeat'],
 					'conditional_logic' => [
 						[
 							[
@@ -272,38 +270,6 @@ function mai_load_popup_repeat_roles( $field ) {
 	$field['choices'] = $choices;
 
 	return $field;
-}
-
-add_filter( 'acf/load_value/key=mai_popup_repeat', 'mai_load_popup_repeat', 10, 3 );
-/**
- * Back-compat for the Repeat field. Before 0.6.0 it was a free-text strtotime
- * duration ("7 days", "2 weeks"); it is now an integer number of days. Convert
- * any non-numeric legacy value to days on load so the number field shows it
- * correctly and existing popups keep their repeat behavior (instead of the
- * number input dropping the value on the next save).
- *
- * @since 0.6.0
- *
- * @param mixed      $value   The stored field value.
- * @param int|string $post_id The post ID.
- * @param array<string,mixed> $field The field array.
- *
- * @return mixed
- */
-function mai_load_popup_repeat( $value, $post_id, $field ) {
-	// Empty or already an integer-days value: leave as-is.
-	if ( '' === $value || null === $value || is_numeric( $value ) ) {
-		return $value;
-	}
-
-	// Legacy strtotime string. Measure its length from epoch and round to days.
-	$seconds = strtotime( '+' . $value, 0 );
-
-	if ( false === $seconds || $seconds <= 0 ) {
-		return $value; // Unparseable; leave for the user to correct.
-	}
-
-	return (string) max( 0, (int) round( $seconds / 86400 ) ); // 86400 = 1 day in seconds.
 }
 
 add_action( 'enqueue_block_editor_assets', 'mai_popups_enqueue_editor_assets' );

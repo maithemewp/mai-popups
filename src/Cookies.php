@@ -2,6 +2,7 @@
 
 namespace Mai\Popups;
 
+use Mai\Popups\Defaults;
 use Mai\Popups\Enum\Trigger;
 
 final class Cookies {
@@ -22,12 +23,18 @@ final class Cookies {
     public function expires( Config $config ): int {
         $repeat = trim( $config->repeat );
 
-        // Repeat is now an integer number of days. Pre-0.6.0 popups (and the
-        // template-tag API) may still pass a strtotime duration string like
-        // "7 days" or "2 weeks", so handle both: a bare integer means days,
-        // anything else is treated as a literal strtotime modifier.
-        $arg = ctype_digit( $repeat ) ? "+{$repeat} days" : '+' . $repeat;
+        // Repeat accepts anything strtotime() understands (e.g. "7 days", "2 weeks").
+        // Safety net: a bare number has no unit, so treat it as days — strtotime("+7")
+        // on its own is invalid.
+        $arg   = is_numeric( $repeat ) ? "+{$repeat} days" : '+' . $repeat;
+        $stamp = \strtotime( $arg );
 
-        return (int) \strtotime( $arg );
+        // An unparseable repeat returns false (which would cast to 0 / epoch
+        // 1970 and re-show the popup every load). Fall back to the default.
+        if ( false === $stamp ) {
+            $stamp = \strtotime( '+' . Defaults::get()['repeat'] );
+        }
+
+        return (int) $stamp;
     }
 }

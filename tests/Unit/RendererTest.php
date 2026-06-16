@@ -15,7 +15,7 @@ dataset( 'renderer_all', [
     'modal-scroll'    => [ 'modal-scroll',    [ 'trigger' => 'scroll', 'distance' => '50', 'position' => 'center center', 'animate' => 'up' ] ],
     'bar-bottom-load' => [ 'bar-bottom-load', [ 'trigger' => 'load', 'position' => 'end center', 'animate' => 'up', 'width' => '100%' ] ],
     'corner-manual'   => [ 'corner-manual',   [ 'trigger' => 'manual', 'position' => 'end end', 'id' => 'mai-popup-fixed', 'disable_close' => true ] ],
-    'colored-padding' => [ 'colored-padding', [ 'trigger' => 'time', 'repeat' => '7', 'background' => 'primary', 'color' => 'white', 'padding' => 'lg', 'class' => 'my-popup' ] ],
+    'colored-padding' => [ 'colored-padding', [ 'trigger' => 'time', 'repeat' => '7 days', 'background' => 'primary', 'color' => 'white', 'padding' => 'lg', 'class' => 'my-popup' ] ],
     'animate-down'    => [ 'animate-down',    [ 'trigger' => 'load', 'position' => 'center center', 'animate' => 'down' ] ],
     'preview'         => [ 'preview',         [ 'trigger' => 'load', 'position' => 'center center', 'preview' => true ] ],
     'full-width-vw'   => [ 'full-width-vw',   [ 'trigger' => 'load', 'position' => 'center center', 'width' => '100vw' ] ],
