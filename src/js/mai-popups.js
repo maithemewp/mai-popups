@@ -72,6 +72,7 @@ function init() {
 
 	const openStack  = new Set();                 // bug #1 fix: real stack, not splice()
 	const triggerFor = new WeakMap();             // popup -> element to refocus on close
+	const noRefocus  = new WeakSet();             // popups closing via an in-page anchor: don't refocus the trigger (#12)
 
 	function open( popup, trigger = null ) {
 		if ( typeof popup === 'string' ) { popup = document.querySelector( popup ); }
@@ -91,7 +92,7 @@ function init() {
 			// it. Setting the `open` attribute shows the dialog non-modally with NO focus
 			// movement and no focus events at all; close()/Esc/cleanup are unaffected.
 			// Focus stays exactly where the reader had it, the popup is reachable by Tab,
-			// and assistive tech is told it appeared via the live region instead (#9).
+			// and assistive tech is told it appeared via the live region instead (#11).
 			popup.open = true;                    // non-modal: no trap, no focus steal
 			labelDialog( popup );
 			announce( popup );
@@ -139,8 +140,12 @@ function init() {
 		stopMedia( popup );
 		popup.removeAttribute( 'closing' );
 		openStack.delete( popup );
-		if ( trigger && typeof trigger.focus === 'function' ) { trigger.focus(); } // bug #4 fix: restore focus
+		// Restore focus to the trigger (bug #4) — UNLESS we closed because the visitor
+		// clicked an in-page anchor inside the popup, where focus has deliberately moved
+		// to the jumped-to section and refocusing the trigger would scroll back up (#12).
+		if ( trigger && ! noRefocus.has( popup ) && typeof trigger.focus === 'function' ) { trigger.focus(); }
 		triggerFor.delete( popup );
+		noRefocus.delete( popup );
 	}
 
 	// Bind affordances ONCE per popup (survives reopen).
@@ -156,6 +161,32 @@ function init() {
 		if ( isModal( popup ) && 'false' !== popup.dataset.close ) {
 			popup.addEventListener( 'click', ( e ) => { if ( e.target === popup ) { requestClose( popup ); } } );
 		}
+
+		// In-page anchor inside the content (e.g. "jump to a section"): close the popup
+		// and land the visitor on that section. A modal otherwise covers the target, and
+		// closing afterwards would bounce focus back to the trigger and scroll up (#12).
+		// Skips popup triggers (#mai-popup-…), bare "#", close-button links, and anchors
+		// that point INTO this popup (those scroll within it).
+		popup.addEventListener( 'click', ( e ) => {
+			const link = e.target.closest && e.target.closest( 'a[href]' );
+			if ( ! link || ! popup.contains( link ) ) { return; }
+			if ( link.closest( '.mai-popup__close, .mai-popup-close' ) ) { return; }
+			const href = link.getAttribute( 'href' );
+			if ( ! href || '#' !== href.charAt( 0 ) || '#' === href || href.startsWith( '#mai-popup-' ) ) { return; }
+			const id     = decodeURIComponent( href.slice( 1 ) );
+			const target = document.getElementById( id ) || document.querySelector( `[name="${ id }"]` );
+			if ( ! target || popup.contains( target ) ) { return; } // no target, or it lives inside the popup
+
+			e.preventDefault();
+			noRefocus.add( popup );               // don't bounce focus/scroll back to the trigger
+			popup.close();                        // immediate (not animated) so the page is uncovered now
+			if ( ! target.hasAttribute( 'tabindex' ) ) { target.setAttribute( 'tabindex', '-1' ); }
+			// Setting the hash scrolls to + records the target; focusing it (without a
+			// second scroll) moves the caret there for keyboard/AT. Both run in this one
+			// handler, so the browser paints only the final position — no scroll flash.
+			window.location.hash = id;
+			target.focus( { preventScroll: true } );
+		} );
 	} );
 
 	// Esc closes only the topmost NON-modal popup (modal Esc fires native 'close' above).

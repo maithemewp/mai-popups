@@ -167,6 +167,67 @@ test( 'non-modal popup announces its accessible name through a polite live regio
 	jest.useRealTimers();
 } );
 
+test( 'in-page anchor inside the popup closes it and moves focus to the section, not back to the trigger (#10)', () => {
+	document.body.innerHTML =
+		'<a id="trigger" href="#mai-popup-x">Open</a>' +
+		'<h2 id="section">A section lower on the page</h2>' +
+		'<dialog class="mai-popup" id="mai-popup-x" data-type="manual" data-modal="true">' +
+			'<button class="mai-popup__close"></button>' +
+			'<div class="mai-popup__content"><a id="jump" href="#section">Jump to section</a></div>' +
+		'</dialog>';
+
+	loadModule();
+
+	const trigger = document.getElementById( 'trigger' );
+	const popup   = document.getElementById( 'mai-popup-x' );
+	const section = document.getElementById( 'section' );
+
+	trigger.focus();
+	trigger.click();                              // manual open
+	expect( popup.open ).toBe( true );
+
+	document.getElementById( 'jump' ).click();    // click the in-page anchor inside the popup
+
+	expect( popup.open ).toBe( false );           // popup closed
+	expect( document.activeElement ).toBe( section );   // focus landed on the target section…
+	expect( document.activeElement ).not.toBe( trigger ); // …NOT bounced back to the trigger
+} );
+
+test( 'an anchor pointing INSIDE the popup does not close it', () => {
+	document.body.innerHTML =
+		'<dialog class="mai-popup" id="p" data-type="load" data-modal="true">' +
+			'<div class="mai-popup__content">' +
+				'<a id="inlink" href="#inside">to inside</a>' +
+				'<h3 id="inside">Inside the popup</h3>' +
+			'</div>' +
+		'</dialog>';
+
+	loadModule();
+
+	const popup = document.getElementById( 'p' );
+	expect( popup.open ).toBe( true );
+	document.getElementById( 'inlink' ).click();
+	expect( popup.open ).toBe( true );            // target lives inside the popup → left alone
+} );
+
+test( 'a #mai-popup- trigger link inside content is left to the trigger handler (not treated as a page anchor)', () => {
+	document.body.innerHTML =
+		'<dialog class="mai-popup" id="host" data-type="load" data-modal="true">' +
+			'<div class="mai-popup__content"><a id="opener" href="#mai-popup-other">Open other</a></div>' +
+		'</dialog>' +
+		'<dialog class="mai-popup" id="mai-popup-other" data-type="manual"></dialog>';
+
+	loadModule();
+
+	const host  = document.getElementById( 'host' );
+	const other = document.getElementById( 'mai-popup-other' );
+	expect( host.open ).toBe( true );
+
+	document.getElementById( 'opener' ).click();
+	// The page-anchor handler ignores #mai-popup- links; the trigger handler opens the other popup.
+	expect( other.open ).toBe( true );
+} );
+
 test( 'modal popup DOES take focus on open (focus moves into the dialog, not back to the page)', () => {
 	document.body.innerHTML =
 		'<input id="field" />' +

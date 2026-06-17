@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.6.1-beta.1 (6/17/26)
-* Fixed: A closed popup no longer renders an invisible, full-frame overlay that blocked clicks across the page — its own trigger link and any other links/buttons stopped working whenever a popup was present (#8). Popup framing now applies only while the popup is open.
-* Fixed: Non-modal popups (bars, slide-ins, corners) no longer steal keyboard focus when they open; focus stays where the visitor was, so a reader or typist isn't yanked to the close button (#9).
-* Added: Non-modal popups now announce themselves to screen readers via a polite live region when they appear (they intentionally don't take focus).
+## 0.6.1 (TBD)
+* Added: Non-modal popups (bars, slide-ins, corners) are announced to screen readers via a polite live region when they appear, since they intentionally don't take focus (#11).
+* Fixed: A closed popup no longer renders an invisible, full-frame overlay that blocked clicks across the page — its own trigger link and any other links/buttons stopped working whenever a popup was present (#10). Popup framing now applies only while the popup is open.
+* Fixed: Non-modal popups no longer steal keyboard focus when they open; focus stays where the visitor was, so a reader or typist isn't yanked to the close button (#11).
+* Fixed: Clicking an in-page anchor (e.g. a "jump to section" link) inside a popup now closes the popup and lands the visitor on that section — previously a modal stayed open covering the target, and closing afterward bounced focus back to the trigger and scrolled back up (#12).
 
 ## 0.6.0 (6/16/26)
 * Added: Accessible modal popups using the native `<dialog>` element (native focus trap, inert background, Escape to close, and `::backdrop` for centered modals).

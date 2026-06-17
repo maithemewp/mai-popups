@@ -10,7 +10,7 @@
    that UA rule (author origin beats UA), leaving every closed popup as an
    invisible (opacity: 0.01) full-frame overlay at z-index 99999 that swallows
    clicks meant for its own trigger link and for any other link/button on the
-   page (#8). */
+   page (#10). */
 .mai-popup[open] {
 	position: fixed;
 	top: var(--mai-popup-spacing);
