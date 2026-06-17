@@ -26,7 +26,6 @@ class ComposerStaticInitdca8d1b624a017eb229ff93df3bcc0b8
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Mai\\Popups\\Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

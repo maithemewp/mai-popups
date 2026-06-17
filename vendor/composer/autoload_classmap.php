@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
-    'Mai\\Popups\\Plugin' => $baseDir . '/src/Plugin.php',
 );

@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.1 (TBD)
+## 0.6.1 (6/17/26)
 * Added: Non-modal popups (bars, slide-ins, corners) are announced to screen readers via a polite live region when they appear, since they intentionally don't take focus (#11).
 * Fixed: A closed popup no longer renders an invisible, full-frame overlay that blocked clicks across the page — its own trigger link and any other links/buttons stopped working whenever a popup was present (#10). Popup framing now applies only while the popup is open.
 * Fixed: Non-modal popups no longer steal keyboard focus when they open; focus stays where the visitor was, so a reader or typist isn't yanked to the close button (#11).
