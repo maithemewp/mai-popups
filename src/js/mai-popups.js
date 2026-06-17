@@ -181,11 +181,14 @@ function init() {
 			noRefocus.add( popup );               // don't bounce focus/scroll back to the trigger
 			popup.close();                        // immediate (not animated) so the page is uncovered now
 			if ( ! target.hasAttribute( 'tabindex' ) ) { target.setAttribute( 'tabindex', '-1' ); }
-			// Setting the hash scrolls to + records the target; focusing it (without a
-			// second scroll) moves the caret there for keyboard/AT. Both run in this one
-			// handler, so the browser paints only the final position — no scroll flash.
-			window.location.hash = id;
+			// Scroll + focus the target ourselves. Do NOT rely on `location.hash = id` to do
+			// the scrolling: assigning the hash its CURRENT value is a no-op, so a visitor
+			// already on a URL ending in #id would see the popup close but the page never
+			// move. Always scrollIntoView(); only touch the hash when it actually changes
+			// (keeps the URL/back-button correct and fires hashchange like a real anchor).
+			target.scrollIntoView();
 			target.focus( { preventScroll: true } );
+			if ( ( '#' + id ) !== window.location.hash ) { window.location.hash = id; }
 		} );
 	} );
 

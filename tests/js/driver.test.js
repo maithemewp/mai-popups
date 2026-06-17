@@ -12,6 +12,10 @@
 // CSS import inside the module — stub so requiring it doesn't blow up.
 jest.mock( '../../src/css/mai-popups.css', () => ( {} ), { virtual: true } );
 
+// jsdom doesn't implement scrollIntoView (it emits a "Not implemented" console.error
+// that @wordpress/jest-console fails on). Stub it as a no-op so the anchor tests run.
+window.HTMLElement.prototype.scrollIntoView = function () {};
+
 // --- dialog polyfill (jsdom lacks the dialog methods) -----------------------
 // Per-element own-property spies (NOT shared prototype methods) so each popup's
 // show()/showModal() calls are independently asserted.
@@ -191,6 +195,29 @@ test( 'in-page anchor inside the popup closes it and moves focus to the section,
 	expect( popup.open ).toBe( false );           // popup closed
 	expect( document.activeElement ).toBe( section );   // focus landed on the target section…
 	expect( document.activeElement ).not.toBe( trigger ); // …NOT bounced back to the trigger
+} );
+
+test( 'in-page anchor still scrolls when the URL already points at the target (#12)', () => {
+	window.location.hash = 'section';             // visitor already on a URL ending in #section
+	document.body.innerHTML =
+		'<a id="trigger" href="#mai-popup-x">Open</a>' +
+		'<h2 id="section">Section</h2>' +
+		'<dialog class="mai-popup" id="mai-popup-x" data-type="manual" data-modal="true">' +
+			'<div class="mai-popup__content"><a id="jump" href="#section">Jump</a></div>' +
+		'</dialog>';
+
+	loadModule();
+
+	const popup     = document.getElementById( 'mai-popup-x' );
+	const scrollSpy = jest.spyOn( document.getElementById( 'section' ), 'scrollIntoView' );
+
+	document.getElementById( 'trigger' ).click();
+	document.getElementById( 'jump' ).click();    // hash is ALREADY #section — assigning it would be a no-op
+
+	expect( popup.open ).toBe( false );
+	expect( scrollSpy ).toHaveBeenCalled();       // we scroll explicitly, so it still jumps to the section
+	scrollSpy.mockRestore();
+	window.location.hash = '';
 } );
 
 test( 'an anchor pointing INSIDE the popup does not close it', () => {
