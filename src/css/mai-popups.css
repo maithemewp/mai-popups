@@ -1,6 +1,17 @@
 .mai-popup {
 	--mai-popup-spacing: 16px;
 	--mai-popup-animation-duration: 500ms;
+}
+
+/* The dialog only becomes the fixed, top-layer frame while it is OPEN. Keeping
+   these properties on `[open]` (rather than the bare `.mai-popup`) lets a closed
+   dialog fall back to the UA `dialog:not([open]) { display: none }`, so it never
+   paints or intercepts page clicks. A bare `display: flex` here would override
+   that UA rule (author origin beats UA), leaving every closed popup as an
+   invisible (opacity: 0.01) full-frame overlay at z-index 99999 that swallows
+   clicks meant for its own trigger link and for any other link/button on the
+   page (#8). */
+.mai-popup[open] {
 	position: fixed;
 	top: var(--mai-popup-spacing);
 	right: var(--mai-popup-spacing);
@@ -254,8 +265,8 @@ html:has(dialog.mai-popup:modal[open]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	/* Without the fade-in animation, force the popup visible (base is opacity: 0.01). */
-	.mai-popup {
+	/* Without the fade-in animation, force the open popup visible (its base is opacity: 0.01). */
+	.mai-popup[open] {
 		opacity: 1;
 	}
 

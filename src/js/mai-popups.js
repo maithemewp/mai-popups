@@ -31,10 +31,44 @@ function stopMedia( popup ) {
 	popup.querySelectorAll( 'video' ).forEach( ( v ) => v.pause() );
 }
 
+// Non-modal popups deliberately don't take focus, so assistive tech wouldn't
+// otherwise know one appeared. Announce the popup's accessible name through a
+// shared polite live region — created once, up front, so it is already being
+// monitored before its text changes (a region added and filled in the same tick
+// is unreliably announced).
+let srAnnouncer = null;
+function ensureAnnouncer() {
+	if ( srAnnouncer ) { return srAnnouncer; }
+	srAnnouncer = document.createElement( 'div' );
+	srAnnouncer.setAttribute( 'aria-live', 'polite' );
+	srAnnouncer.setAttribute( 'aria-atomic', 'true' );
+	Object.assign( srAnnouncer.style, {
+		position: 'absolute', width: '1px', height: '1px',
+		margin: '-1px', padding: '0', border: '0',
+		overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap',
+	} );
+	document.body.appendChild( srAnnouncer );
+	return srAnnouncer;
+}
+
+function announce( popup ) {
+	const region  = ensureAnnouncer();
+	const labelId = popup.getAttribute( 'aria-labelledby' );
+	const labelEl = labelId ? document.getElementById( labelId ) : null;
+	const text    = ( ( labelEl ? labelEl.textContent : popup.getAttribute( 'aria-label' ) ) || '' ).trim();
+	if ( ! text ) { return; }
+	region.textContent = '';                  // clear first so reopening the same popup re-announces
+	setTimeout( () => { region.textContent = text; }, 50 );
+}
+
 function init() {
 	const popups   = document.querySelectorAll( '.mai-popup' );
 	const triggers = document.querySelectorAll( '[href^="#mai-popup-"]' );
 	if ( ! popups.length && ! triggers.length ) { return; }
+
+	// Stand up the live region now (not on first open) so screen readers are
+	// already watching it when a non-modal popup announces itself.
+	if ( [ ...popups ].some( ( p ) => ! isModal( p ) ) ) { ensureAnnouncer(); }
 
 	const openStack  = new Set();                 // bug #1 fix: real stack, not splice()
 	const triggerFor = new WeakMap();             // popup -> element to refocus on close
@@ -51,8 +85,16 @@ function init() {
 			labelDialog( popup );
 			popup.focus();                        // a11y: focus the titled dialog, not the Close button
 		} else {
-			popup.show();                         // non-modal: no trap, page stays usable
+			// A non-modal popup (bar / slide-in / corner) must NOT pull focus from the
+			// page. dialog.show() runs the focusing steps and lands focus on the first
+			// focusable descendant (the Close button) — and there is no flag to suppress
+			// it. Setting the `open` attribute shows the dialog non-modally with NO focus
+			// movement and no focus events at all; close()/Esc/cleanup are unaffected.
+			// Focus stays exactly where the reader had it, the popup is reachable by Tab,
+			// and assistive tech is told it appeared via the live region instead (#9).
+			popup.open = true;                    // non-modal: no trap, no focus steal
 			labelDialog( popup );
+			announce( popup );
 		}
 		openStack.add( popup );
 	}
