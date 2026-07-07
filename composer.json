@@ -7,7 +7,8 @@
         "brain/monkey": "^2.6",
         "mockery/mockery": "^1.6",
         "phpstan/phpstan": "^2.1",
-        "php-stubs/wordpress-stubs": "^6.7"
+        "php-stubs/wordpress-stubs": "^6.7",
+        "maithemewp/deployable-guard": "^1"
     },
     "autoload": {
         "psr-4": {
@@ -26,6 +27,25 @@
     },
     "scripts": {
         "test": "pest",
-        "stan": "phpstan analyse"
+        "stan": "phpstan analyse",
+        "install-git-hooks": [
+            "@php vendor/bin/deployable-guard install-hook"
+        ],
+        "post-install-cmd": [
+            "@install-git-hooks"
+        ],
+        "post-update-cmd": [
+            "@install-git-hooks"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/maithemewp/deployable-guard"
+        }
+    ],
+    "scripts-no-dev": {
+        "post-install-cmd": [],
+        "post-update-cmd": []
     }
 }
