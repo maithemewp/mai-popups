@@ -29,7 +29,7 @@
         "test": "pest",
         "stan": "phpstan analyse",
         "install-git-hooks": [
-            "@php vendor/bin/deployable-guard install-hook"
+            "sh -c 'test -f vendor/bin/deployable-guard && php vendor/bin/deployable-guard install-hook || true'"
         ],
         "post-install-cmd": [
             "@install-git-hooks"
@@ -43,9 +43,5 @@
             "type": "vcs",
             "url": "https://github.com/bizbudding/deployable-guard"
         }
-    ],
-    "scripts-no-dev": {
-        "post-install-cmd": [],
-        "post-update-cmd": []
-    }
+    ]
 }
