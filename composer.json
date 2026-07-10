@@ -8,7 +8,7 @@
         "mockery/mockery": "^1.6",
         "phpstan/phpstan": "^2.1",
         "php-stubs/wordpress-stubs": "^6.7",
-        "maithemewp/deployable-guard": "^1"
+        "bizbudding/deployable-guard": "^1"
     },
     "autoload": {
         "psr-4": {
@@ -41,7 +41,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/maithemewp/deployable-guard"
+            "url": "https://github.com/bizbudding/deployable-guard"
         }
     ],
     "scripts-no-dev": {
