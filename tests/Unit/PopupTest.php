@@ -74,9 +74,9 @@ test( 'footer timing: outside the footer it defers BOTH the enqueue and the mark
     Functions\when( 'doing_action' )->justReturn( false ); // isFooter() === false
     Functions\when( 'did_action' )->justReturn( false );
 
-    // The asset enqueue must also be deferred to wp_footer (not run synchronously):
-    // when content renders via mai_get_processed_content()/do_blocks, a synchronous
-    // enqueue is wiped before footer scripts print, so the popup JS never loads.
+    // The enqueue is deferred because a synchronous one during the block render can be
+    // dequeued by an ancestor block that renders empty (a synced pattern holding only a
+    // popup, say). Block::keepAssets() only covers the popup block's own name.
     $calls = [];
     Functions\expect( 'add_action' )
         ->twice()
