@@ -76,7 +76,7 @@ test( 'footer timing: outside the footer it enqueues right away and defers only 
 
     // The enqueue happens during the block render, where core's on-demand block styles
     // are enqueued too. It survives because the block opts out of the empty-content
-    // dequeue in WP_Block::render(). See mai_popup_keep_block_assets().
+    // dequeue in WP_Block::render(). See Mai\Popups\Block::keepAssets().
     $enqueued = [];
     Functions\when( 'wp_enqueue_style' )->alias( function ( $handle ) use ( &$enqueued ) { $enqueued[] = "style:{$handle}"; } );
     Functions\when( 'wp_enqueue_script' )->alias( function ( $handle ) use ( &$enqueued ) { $enqueued[] = "script:{$handle}"; } );

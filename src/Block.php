@@ -43,6 +43,8 @@ final class Block {
     /**
      * Whether to keep the assets enqueued while a block with no rendered content rendered.
      *
+     * Registered from render(), so it only exists on requests that render a popup.
+     *
      * Since WP 6.9, WP_Block::render() dequeues whatever a block enqueued while rendering,
      * if that block returned no content. The popup block returns nothing, because it prints
      * its markup at wp_footer, so everything its inner blocks enqueued gets thrown away. A
@@ -56,6 +58,9 @@ final class Block {
     /** @param array<string,mixed> $attributes */
     public static function render( array $attributes, string $content, bool $is_preview ): void {
         $args = self::args( $attributes, $is_preview );
+
+        // Core decides whether to dequeue this block's assets once render() returns below.
+        \add_filter( 'enqueue_empty_block_content_assets', [ self::class, 'keepAssets' ], 10, 2 );
 
         if ( $is_preview ) {
             $template = \wp_json_encode( [ [ 'core/paragraph', [], [] ] ] );

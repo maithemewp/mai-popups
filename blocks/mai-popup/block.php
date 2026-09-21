@@ -37,21 +37,6 @@ function mai_do_popup_block( $attributes, $content, $is_preview, $post_id, $wp_b
 	\Mai\Popups\Block::render( (array) $attributes, (string) $content, (bool) $is_preview );
 }
 
-add_filter( 'enqueue_empty_block_content_assets', 'mai_popup_keep_block_assets', 10, 2 );
-/**
- * Keeps the stylesheets and scripts of blocks inside a popup. See Mai\Popups\Block::keepAssets().
- *
- * @since TBD
- *
- * @param bool   $enqueue    Whether to enqueue assets for a block with no rendered content.
- * @param string $block_name The block name.
- *
- * @return bool
- */
-function mai_popup_keep_block_assets( $enqueue, $block_name ) {
-	return \Mai\Popups\Block::keepAssets( (bool) $enqueue, (string) $block_name );
-}
-
 add_action( 'acf/init', 'mai_register_popup_field_group' );
 /**
  * Register popup field group.

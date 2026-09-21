@@ -97,3 +97,19 @@ test( 'keepAssets() keeps assets for the popup block only', function () {
     expect( Block::keepAssets( false, 'core/cover' ) )->toBeFalse();
     expect( Block::keepAssets( true, 'core/cover' ) )->toBeTrue();
 } );
+
+test( 'render() registers keepAssets() so core does not dequeue the inner blocks assets', function () {
+    Functions\when( 'get_field' )->justReturn( '' );
+    Functions\when( 'do_shortcode' )->returnArg();
+    Functions\when( 'wp_json_encode' )->alias( 'json_encode' );
+    Functions\when( 'esc_attr' )->returnArg();
+
+    $filters = [];
+    Functions\when( 'add_filter' )->alias( function ( $hook, $cb ) use ( &$filters ) { $filters[ $hook ] = $cb; } );
+
+    ob_start();
+    Block::render( [], '<p>x</p>', true ); // Preview: prints inline, no Assets/wp_footer.
+    ob_get_clean();
+
+    expect( $filters['enqueue_empty_block_content_assets'] )->toBe( [ Block::class, 'keepAssets' ] );
+} );
