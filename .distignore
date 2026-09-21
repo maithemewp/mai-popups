@@ -20,3 +20,9 @@
 /.github/
 /.githooks/
 /mai-sites.json
+/docs/
+/stubs/
+/src/css/
+/src/js/
+/phpstan.neon
+/patchwork.json
