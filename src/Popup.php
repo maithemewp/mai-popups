@@ -22,7 +22,17 @@ final class Popup {
         if ( ! $this->conditions->passes( $this->config ) ) { return; }
 
         if ( ! $this->config->preview ) {
-            Assets::enqueue();
+            // Enqueue at wp_footer, unless we're already there. Enqueuing during the block
+            // render instead would not always survive: WP_Block::render() dequeues whatever
+            // a block enqueued if that block rendered empty, and while the popup block itself
+            // opts out via Block::keepAssets(), an ancestor block that also renders empty
+            // (a synced pattern holding only a popup, say) does not. By wp_footer the block
+            // render stack has unwound, so there is nothing left to dequeue us.
+            if ( $this->isFooter() ) {
+                Assets::enqueue();
+            } else {
+                \add_action( 'wp_footer', [ Assets::class, 'enqueue' ] );
+            }
         }
 
         $output = fn () => print $this->renderer->render( $this->config, $this->content );

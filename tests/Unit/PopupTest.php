@@ -70,33 +70,30 @@ test( 'footer timing: in the footer it prints immediately', function () {
     expect( $html )->toContain( '<dialog' );
 } );
 
-test( 'footer timing: outside the footer it enqueues right away and defers only the markup', function () {
+test( 'footer timing: outside the footer it defers BOTH the enqueue and the markup to wp_footer', function () {
     Functions\when( 'doing_action' )->justReturn( false ); // isFooter() === false
     Functions\when( 'did_action' )->justReturn( false );
 
-    // The enqueue happens during the block render, where core's on-demand block styles
-    // are enqueued too. It survives because the block opts out of the empty-content
-    // dequeue in WP_Block::render(). See Mai\Popups\Block::keepAssets().
-    $enqueued = [];
-    Functions\when( 'wp_enqueue_style' )->alias( function ( $handle ) use ( &$enqueued ) { $enqueued[] = "style:{$handle}"; } );
-    Functions\when( 'wp_enqueue_script' )->alias( function ( $handle ) use ( &$enqueued ) { $enqueued[] = "script:{$handle}"; } );
-
-    // Only the markup is deferred, so nothing prints synchronously.
+    // The enqueue is deferred because a synchronous one during the block render can be
+    // dequeued by an ancestor block that renders empty (a synced pattern holding only a
+    // popup, say). Block::keepAssets() only covers the popup block's own name.
     $calls = [];
     Functions\expect( 'add_action' )
-        ->once()
+        ->twice()
         ->andReturnUsing( function ( $hook, $cb ) use ( &$calls ) {
             $calls[] = [ 'hook' => $hook, 'cb' => $cb ];
             return true;
         } );
 
+    // Nothing should print synchronously when deferred.
     $html = maipopups_capture( function () {
         ( new Popup( Config::fromArray( [ 'id' => 'footer-later', 'trigger' => 'load' ] ), '<p>x</p>' ) )->render();
     } );
 
-    expect( $enqueued )->toBe( [ 'script:mai-popups', 'style:mai-popups' ] );
-    expect( $calls[0]['hook'] )->toBe( 'wp_footer' );
-    expect( $calls[0]['cb'] )->toBeInstanceOf( Closure::class );
+    // Both deferrals target wp_footer; enqueue is registered first, then the markup.
+    expect( array_column( $calls, 'hook' ) )->toBe( [ 'wp_footer', 'wp_footer' ] );
+    expect( $calls[0]['cb'] )->toBe( [ \Mai\Popups\Assets::class, 'enqueue' ] );
+    expect( $calls[1]['cb'] )->toBeInstanceOf( Closure::class );
     expect( $html )->toBe( '' );
 } );
 

@@ -3,7 +3,14 @@
 use Mai\Popups\Block;
 use Brain\Monkey\Functions;
 
-beforeEach( fn () => maipopups_stub_wp_helpers() );
+beforeEach( function () {
+    maipopups_stub_wp_helpers();
+
+    // Reset the static once-guard so tests don't leak across the run.
+    $prop = new ReflectionProperty( \Mai\Popups\Popup::class, 'loaded' );
+    $prop->setAccessible( true );
+    $prop->setValue( null, [] );
+} );
 
 test( 'args() maps each ACF field into the right Config-arg slot', function () {
     // Known field map: every get_field( $key ) returns a distinct sentinel so a
@@ -96,6 +103,10 @@ test( 'keepAssets() keeps assets for the popup block only', function () {
     expect( Block::keepAssets( false, 'acf/mai-popup' ) )->toBeTrue();
     expect( Block::keepAssets( false, 'core/cover' ) )->toBeFalse();
     expect( Block::keepAssets( true, 'core/cover' ) )->toBeTrue();
+
+    // Core casts the result, so another plugin's filter may hand us a non-bool.
+    expect( Block::keepAssets( null, 'core/cover' ) )->toBeFalse();
+    expect( Block::keepAssets( 1, 'core/cover' ) )->toBeTrue();
 } );
 
 test( 'render() registers keepAssets() so core does not dequeue the inner blocks assets', function () {

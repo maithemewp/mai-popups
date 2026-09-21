@@ -2,7 +2,6 @@
 
 ## Unreleased
 * Fixed: Blocks inside a popup lost their stylesheets and scripts on WordPress 6.9+, so a cover block in a popup rendered unstyled unless the same block appeared elsewhere on the page (#13).
-* Changed: Popup assets enqueue during the block render again, now that the assets of blocks inside a popup survive.
 
 ## 0.6.1 (6/17/26)
 * Added: Non-modal popups (bars, slide-ins, corners) are announced to screen readers via a polite live region when they appear, since they intentionally don't take focus (#11).

@@ -44,6 +44,8 @@ final class Block {
      * Whether to keep the assets enqueued while a block with no rendered content rendered.
      *
      * Registered from render(), so it only exists on requests that render a popup.
+     * This covers the blocks inside the popup. The plugin's own assets are enqueued at
+     * wp_footer instead, out of reach of an ancestor block that renders empty too.
      *
      * Since WP 6.9, WP_Block::render() dequeues whatever a block enqueued while rendering,
      * if that block returned no content. The popup block returns nothing, because it prints
@@ -51,8 +53,8 @@ final class Block {
      * cover block inside a popup loses core's wp-block-cover styles, for example, unless
      * something else on the page happens to use the same block.
      */
-    public static function keepAssets( bool $enqueue, string $blockName ): bool {
-        return 'acf/mai-popup' === $blockName ? true : $enqueue;
+    public static function keepAssets( mixed $enqueue, string $blockName ): bool {
+        return 'acf/mai-popup' === $blockName ? true : (bool) $enqueue;
     }
 
     /** @param array<string,mixed> $attributes */
