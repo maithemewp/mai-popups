@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.2 (9/21/26)
 * Fixed: Blocks inside a popup lost their stylesheets and scripts on WordPress 6.9+, so a cover block in a popup rendered unstyled unless the same block appeared elsewhere on the page (#13).
 
 ## 0.6.1 (6/17/26)
