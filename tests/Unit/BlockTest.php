@@ -91,3 +91,9 @@ test( 'args() reflects the is_preview argument in the preview slot', function ()
     expect( Block::args( [], true )['preview'] )->toBeTrue();
     expect( Block::args( [], false )['preview'] )->toBeFalse();
 } );
+
+test( 'keepAssets() keeps assets for the popup block only', function () {
+    expect( Block::keepAssets( false, 'acf/mai-popup' ) )->toBeTrue();
+    expect( Block::keepAssets( false, 'core/cover' ) )->toBeFalse();
+    expect( Block::keepAssets( true, 'core/cover' ) )->toBeTrue();
+} );

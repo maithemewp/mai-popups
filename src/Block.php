@@ -40,6 +40,19 @@ final class Block {
         ];
     }
 
+    /**
+     * Whether to keep the assets enqueued while a block with no rendered content rendered.
+     *
+     * Since WP 6.9, WP_Block::render() dequeues whatever a block enqueued while rendering,
+     * if that block returned no content. The popup block returns nothing, because it prints
+     * its markup at wp_footer, so everything its inner blocks enqueued gets thrown away. A
+     * cover block inside a popup loses core's wp-block-cover styles, for example, unless
+     * something else on the page happens to use the same block.
+     */
+    public static function keepAssets( bool $enqueue, string $blockName ): bool {
+        return 'acf/mai-popup' === $blockName ? true : $enqueue;
+    }
+
     /** @param array<string,mixed> $attributes */
     public static function render( array $attributes, string $content, bool $is_preview ): void {
         $args = self::args( $attributes, $is_preview );
